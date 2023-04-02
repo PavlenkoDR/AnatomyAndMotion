@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:touchtracking="clr-namespace:TouchTracking"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             xmlns:crossvideoview="clr-namespace:CrossVideoView"
+             x:Class="MuscleAnatomyAndMotion.AnatomyPage">
+
+    <StackLayout BackgroundColor="Black">
+        <Grid>
+            <Grid x:Name="contentHolder" VerticalOptions="CenterAndExpand" HeightRequest="600" Scale="{Binding ContentScale}" Padding="0">
+                <Grid VerticalOptions="CenterAndExpand" HeightRequest="{Binding ContentHeight}" Padding="0">
+                    <crossvideoview:VideoView x:Name="videoView" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+                </Grid>
+                <Grid x:Name="CanvasHolder" VerticalOptions="CenterAndExpand" HeightRequest="{Binding ContentHeight}" Padding="0">
+                    <Grid.Effects>
+                        <touchtracking:TouchEffect Capture="True" TouchAction="TouchEffect_TouchAction"/>
+                    </Grid.Effects>
+                    <skia:SKCanvasView x:Name="Canvas" TranslationX="{Binding xOffset}" Opacity="0.5" PaintSurface="SKCanvasView_PaintSurface"/>
+                </Grid>
+            </Grid>
+            <Grid x:Name="infoHolder" InputTransparent="True" CascadeInputTransparent="False"/>
+        </Grid>
+        <Grid Padding="10" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" x:Name="AddLayer" Text="+ layer" Clicked="AddLayer_Clicked"/>
+            <Button Grid.Column="1" x:Name="RemoveLayer" Text="- layer" Clicked="RemoveLayer_Clicked"/>
+            <Button Grid.Column="2" x:Name="Rotate" Text="rotate" Clicked="Rotate_Clicked"/>
+        </Grid>
+        <Grid Padding="10" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" x:Name="SeekBackward" Text="+" Clicked="SeekBackward_Clicked"/>
+            <Button Grid.Column="1" x:Name="SeekForward" Text="-" Clicked="SeekForward_Clicked"/>
+            <Button Grid.Column="2" x:Name="Highlight" Text="Highlight" Clicked="Highlight_Clicked"/>
+        </Grid>
+        <Label x:Name="debugLabel" Text=""/>
+    </StackLayout>
+
+</ContentPage>

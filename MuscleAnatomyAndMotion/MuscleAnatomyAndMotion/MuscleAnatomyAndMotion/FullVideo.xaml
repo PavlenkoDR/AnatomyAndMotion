@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:crossvideoview="clr-namespace:CrossVideoView"
+             x:Class="MuscleAnatomyAndMotion.FullVideo" BackgroundColor="Black">
+    <ContentPage.Content>
+        <Grid>
+            <CarouselView ItemsSource="{Binding videoUrls}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IndicatorView="indicator" CurrentItemChanged="CarouselView_CurrentItemChanged">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                        </StackLayout>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+            <StackLayout InputTransparent="True" CascadeInputTransparent="False">
+                <crossvideoview:VideoView x:Name="videoView" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" InputTransparent="True"/>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="5">
+                    <Button Text="⏪" FontSize="20" WidthRequest="50" Clicked="Button_Clicked"/>
+                    <Button Text="⏯️" FontSize="20" WidthRequest="50" Clicked="Button_Clicked_1"/>
+                    <Button Text="⏩" FontSize="20" WidthRequest="50" Clicked="Button_Clicked_2"/>
+                </StackLayout>
+                <IndicatorView x:Name="indicator" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" Margin="0, 10, 0, 5"/>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

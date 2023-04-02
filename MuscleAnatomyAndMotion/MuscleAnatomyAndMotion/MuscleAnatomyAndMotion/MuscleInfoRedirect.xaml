@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MuscleAnatomyAndMotion.MuscleInfoRedirect"
+             VerticalOptions="Start" HorizontalOptions="Start" InputTransparent="True" CascadeInputTransparent="False">
+    <ContentView.Content>
+        <StackLayout InputTransparent="True" CascadeInputTransparent="False" TranslationX="-30" TranslationY="-10" VerticalOptions="Start" HorizontalOptions="Start" Padding="0" Spacing="-6">
+            <Label InputTransparent="True" BackgroundColor="Orange" Text="{Binding Description}" FontSize="16" WidthRequest="200" LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
+            <Button IsEnabled="{Binding IsButtonEnabled}" Text="Open" Clicked="Button_Clicked" FontSize="16" WidthRequest="120" HeightRequest="50" HorizontalOptions="Center"/>
+        </StackLayout>
+    </ContentView.Content>
+</ContentView>

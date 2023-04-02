@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MuscleAnatomyAndMotion.MuscleInfoListPage"
+             BackgroundColor="Black">
+    <ContentPage.Content>
+        <StackLayout Padding="5" BackgroundColor="Black">
+            <Frame Margin="5" Padding="15, 5, 15, 5" BackgroundColor="Black" BorderColor="DarkGray">
+                <Editor Placeholder="Поиск" TextChanged="Editor_TextChanged" TextColor="White" PlaceholderColor="Gray"/>
+            </Frame>
+            <ListView x:Name="mainScroll" ItemsSource="{Binding MuscleCells}" SelectionMode="None"  BackgroundColor="Black" CachingStrategy="RetainElement" RowHeight="650">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <StackLayout VerticalOptions="Center" HeightRequest="650">
+                                    <Frame BackgroundColor="Black" BorderColor="DarkGray" Margin="5" VerticalOptions="FillAndExpand">
+                                        <StackLayout VerticalOptions="FillAndExpand" Spacing="5" Padding="5">
+                                            <Label Text="{Binding MuscleIndex}" TextColor="White"/>
+                                            <Grid>
+                                                <CarouselView ItemsSource="{Binding MuscleCell}" VerticalOptions="FillAndExpand" PeekAreaInsets="30">
+                                                    <CarouselView.InputTransparent>
+                                                        <OnPlatform x:TypeArguments="x:Boolean">
+                                                            <OnPlatform.Platforms>
+                                                                <On Platform="Android" Value="False" />
+                                                                <On Platform="UWP" Value="True" />
+                                                            </OnPlatform.Platforms>
+                                                        </OnPlatform>
+                                                    </CarouselView.InputTransparent>
+                                                    <CarouselView.Loop>
+                                                        <OnPlatform x:TypeArguments="x:Boolean">
+                                                            <OnPlatform.Platforms>
+                                                                <On Platform="Android" Value="True" />
+                                                                <On Platform="UWP" Value="False" />
+                                                            </OnPlatform.Platforms>
+                                                        </OnPlatform>
+                                                    </CarouselView.Loop>
+                                                    <CarouselView.ItemsLayout>
+                                                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5" />
+                                                    </CarouselView.ItemsLayout>
+                                                    <CarouselView.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackLayout Padding="5" VerticalOptions="FillAndExpand">
+                                                                <Frame Padding="5" HeightRequest="450"  BackgroundColor="Black" BorderColor="DarkGray" HasShadow="True">
+                                                                    <Frame.VerticalOptions>
+                                                                        <OnPlatform x:TypeArguments="LayoutOptions">
+                                                                            <OnPlatform.Platforms>
+                                                                                <On Platform="Android" Value="CenterAndExpand" />
+                                                                                <On Platform="UWP" Value="Start" />
+                                                                            </OnPlatform.Platforms>
+                                                                        </OnPlatform>
+                                                                    </Frame.VerticalOptions>
+                                                                    <Grid VerticalOptions="FillAndExpand">
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="17*"/>
+                                                                            <RowDefinition Height="3*"/>
+                                                                        </Grid.RowDefinitions>
+                                                                        <Grid Grid.Row="0" VerticalOptions="Start">
+                                                                            <Image Aspect="AspectFit" Source="{Binding MuscleImage}" IsOpaque="True" VerticalOptions="Start"/>
+                                                                            <Image Aspect="AspectFit" Source="{Binding MuscleImageCover}" VerticalOptions="Start"/>
+                                                                        </Grid>
+                                                                        <Label TextColor="White" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Row="1" Text="{Binding MuscleName}"/>
+                                                                    </Grid>
+                                                                </Frame>
+                                                            </StackLayout>
+                                                        </DataTemplate>
+                                                    </CarouselView.ItemTemplate>
+                                                </CarouselView>
+                                                <Grid>
+                                                    <Grid.IsVisible>
+                                                        <OnPlatform x:TypeArguments="x:Boolean">
+                                                            <OnPlatform.Platforms>
+                                                                <On Platform="Android" Value="False" />
+                                                                <On Platform="UWP" Value="True" />
+                                                            </OnPlatform.Platforms>
+                                                        </OnPlatform>
+                                                    </Grid.IsVisible>
+                                                    <Button Text="⏪" HorizontalOptions="Start" VerticalOptions="Center" Clicked="scrollLeftButton_Clicked"/>
+                                                    <Button Text="⏩" HorizontalOptions="End" VerticalOptions="Center" Clicked="scrollRightButton_Clicked"/>
+                                                </Grid>
+                                            </Grid>
+                                            <Button Text="Открыть" Clicked="Button_Clicked" ClassId="{Binding MuscleIndex}"/>
+                                        </StackLayout>
+                                    </Frame>
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
