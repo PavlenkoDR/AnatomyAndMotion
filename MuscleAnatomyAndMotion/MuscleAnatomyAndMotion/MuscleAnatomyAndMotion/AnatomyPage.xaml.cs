@@ -31,7 +31,7 @@ namespace MuscleAnatomyAndMotion
                 return 400;
             }
         }
-        private string muscleAreaName;
+        private MuscleAsset muscleAsset;
         private int maxLayer;
         public float xOffset { get; set; }
 
@@ -44,16 +44,18 @@ namespace MuscleAnatomyAndMotion
         {
             public float Opacity { get; set; }
             public string CanvasName { get; set; }
+            public string Name { get; set; }
+            public MuscleID Target { get; set; }
         }
 
         SortedDictionary<string, SKBitmap> bitmapsScaled = new SortedDictionary<string, SKBitmap>();
         SortedDictionary<string, SKBitmap> bitmapsOriginal = new SortedDictionary<string, SKBitmap>();
         List<CanvasData> data = new List<CanvasData>();
 
-        public AnatomyPage(float xOffset, float contentScale, string muscleAreaName, int maxLayer, List<int> rotateTimingFrames)
+        public AnatomyPage(float xOffset, float contentScale, BodyPartID id, int maxLayer, List<int> rotateTimingFrames)
         {
             this.xOffset = xOffset;
-            this.muscleAreaName = muscleAreaName;
+            this.muscleAsset = App.muscleAssets[id];
             this.maxLayer = maxLayer;
             ContentScale = contentScale;
             for (int i = 0; i < rotateTimingFrames.Count; ++i)
@@ -69,12 +71,13 @@ namespace MuscleAnatomyAndMotion
 
             var assembly = Application.Current.GetType().Assembly;
             
-            Stream stream = assembly.GetManifestResourceStream($"MuscleAnatomyAndMotion.Assets.{muscleAreaName}.{muscleAreaName}.mp4");
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"MuscleAnatomyAndMotion.Assets.{muscleAreaName}.{muscleAreaName}.mp4");
+            Stream stream = await ExternalResourceController.GetInputStream("ru", $"{muscleAsset.video_url}");
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{muscleAsset.video_url}");
             if (File.Exists(path))
             {
                 File.Delete(path);
             }
+            new FileInfo(path).Directory.Create();
             using (var fileStream = File.OpenWrite(path))
             {
                 await stream.CopyToAsync(fileStream);
@@ -82,7 +85,7 @@ namespace MuscleAnatomyAndMotion
 
             videoView.SetVideoPath(path);
             videoView.Start();
-            videoView.SeekTo(TimeSpan.FromMilliseconds(0));
+            await PlayTo(GetNextTimeSpan(), true);
             videoView.Pause();
             SetupCanvasHolder();
         }
@@ -106,17 +109,13 @@ namespace MuscleAnatomyAndMotion
 
         private void SetupCanvasHolder()
         {
-            var assembly = Application.Current.GetType().Assembly;
-            foreach (var path in assembly.GetManifestResourceNames())
-            {
-                if (path.Contains($"{muscleAreaName}.{currentLayer + 1}.{currentRotate + 1}"))
-                {
-                    data.Add(new CanvasData {
-                        CanvasName = path,
-                        Opacity = 0.0f
-                    });
-                }
-            }
+            data = muscleAsset.layers[currentLayer].sides[currentRotate].areas.Select(x => new CanvasData() { 
+                CanvasName = x.area_image_url,
+                Name = x.name,
+                Target = x.target_id,
+                Opacity = 0.0f
+            }).ToList();
+
             Canvas.InvalidateSurface();
         }
 
@@ -124,24 +123,34 @@ namespace MuscleAnatomyAndMotion
         {
             return TimeSpan.FromTicks(rotateTimings[currentRotate]) + TimeSpan.FromMilliseconds(1034 * currentLayer);
         }
-
-        private async void SetupView(bool immideately)
+        bool isCompleted = true;
+        private void SetupView(bool immideately)
         {
-            bitmapsScaled.Clear();
-            data.Clear();
-            Canvas.InvalidateSurface();
-            infoHolder.Children.Clear();
-            var destination = GetNextTimeSpan();
-            await PlayTo(destination, immideately).ContinueWith((task) =>
+            if (!isCompleted)
             {
-                if (currentRotate == rotateTimings.Count - 1)
+                return;
+            }
+            isCompleted = false;
+            Device.BeginInvokeOnMainThread(async ()=> {
+                bitmapsOriginal.Clear();
+                bitmapsScaled.Clear();
+                data.Clear();
+                Canvas.InvalidateSurface();
+                infoHolder.Children.Clear();
+                var destination = GetNextTimeSpan();
+                await PlayTo(destination, immideately).ContinueWith(async (task) =>
                 {
-                    currentRotate = 0;
-                    destination = GetNextTimeSpan();
-                    PlayTo(destination, true);
-                }
+                    if (currentRotate == rotateTimings.Count - 1)
+                    {
+                        currentRotate = 0;
+                        destination = GetNextTimeSpan();
+                        await PlayTo(destination, true);
+                    }
+                });
+                SetupCanvasHolder();
+                await Task.Delay(500);
+                isCompleted = true;
             });
-            SetupCanvasHolder();
         }
 
         private void AddLayer_Clicked(object sender, EventArgs e)
@@ -199,40 +208,17 @@ namespace MuscleAnatomyAndMotion
                                     data.Opacity = 0.5f;
                                     infoHolder.Children.Clear();
                                     var message = bitmap.Key;
-                                    var links = App.links.Where(x => x.Key == bitmap.Key);
-                                    int linkValue = -1;
-                                    int linkIndex = -1;
-                                    if (links.Count() > 0)
-                                    {
-                                        var link = links.First();
-                                        if (int.TryParse(link.Value, out linkValue))
-                                        {
-                                            if (App.muscleFullInfos.ContainsKey(linkValue))
-                                            {
-                                                linkIndex = link.Index;
-                                                var info = App.muscleFullInfos[linkValue];
-                                                message += $"\nValue: {link.Value}";
-                                                message += $"\nIndex: {link.Index}";
-                                                message += $"\nMuscle: {info.mainVideos[link.Index].muscle}";
-                                            }
-                                            else
-                                            {
-                                                message += $"\nUndefined muscle info: {link.Value}";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            message += $"\nUnknown link value: {link.Value}";
-                                        }
-                                    }
-                                    else
-                                    {
-                                        message += $"\nUnknown image";
-                                    }
-                                    var redirectView = new MuscleInfoRedirect(message, linkValue, linkIndex);
+
+                                    //var kkk = muscleAsset.layers.;
+
+                                    message += $"\nValue: {data.CanvasName}";
+                                    message += $"\nIndex: {data.Name}";
+                                    message += $"\nMuscle: {data.Target}";
+
+                                    var redirectView = new MuscleInfoRedirect(message, data.Target);
                                     infoHolder.Children.Add(redirectView);
                                     redirectView.TranslationX = Math.Min(args.Location.X + CanvasHolder.X, infoHolder.Width - redirectView.Width - 80.0);
-                                    redirectView.TranslationY = args.Location.Y + CanvasHolder.Y;
+                                    redirectView.TranslationY = args.Location.Y + CanvasHolder.Y + 30.0;
                                     _ = Task.Delay(4000).ContinueWith((task) =>
                                     {
                                         Device.BeginInvokeOnMainThread(() =>
@@ -262,76 +248,83 @@ namespace MuscleAnatomyAndMotion
 
         private void SKCanvasView_PaintSurface(object sender, SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e)
         {
-            SKImageInfo info = e.Info;
-            SKSurface surface = e.Surface;
-            SKCanvas canvas = surface.Canvas;
-            SKCanvasView view = sender as SKCanvasView;
-
-            canvas.Clear();
-
-            if (lastPoint.HasValue)
+            try
             {
-                canvas.DrawCircle((float)lastPoint.Value.X, (float)lastPoint.Value.Y, 5, new SKPaint() { Color = SKColor.Parse("#ff0000") });
-                lastPoint = null;
-                return;
+                SKImageInfo info = e.Info;
+                SKSurface surface = e.Surface;
+                SKCanvas canvas = surface.Canvas;
+                SKCanvasView view = sender as SKCanvasView;
+
+                canvas.Clear();
+
+                if (lastPoint.HasValue)
+                {
+                    canvas.DrawCircle((float)lastPoint.Value.X, (float)lastPoint.Value.Y, 5, new SKPaint() { Color = SKColor.Parse("#ff0000") });
+                    lastPoint = null;
+                    return;
+                }
+
+                foreach (var data in data)
+                {
+                    try
+                    {
+                        var path = data.CanvasName;
+                        var assembly = Application.Current.GetType().Assembly;
+                        Stream stream = ExternalResourceController.GetInputStream("ru", $"{path}").Result;
+
+                        SKBitmap bitmap = null;
+                        bool needResize = false;
+
+                        if (bitmapsOriginal.ContainsKey(path))
+                        {
+                            bitmap = bitmapsOriginal[path];
+                        }
+                        else
+                        {
+                            bitmap = SKBitmap.Decode(stream);
+                            needResize = true;
+                        }
+
+                        var scale = (float)view.Height * 1.0f / bitmap.Height;
+                        var width = bitmap.Width * scale;
+                        var height = bitmap.Height * scale;
+
+                        if (needResize)
+                        {
+                            bitmapsOriginal.Add(path, bitmap.Copy());
+                            SKImageInfo bitmapInfo = new SKImageInfo((int)width, (int)height);
+                            bitmap = bitmap.Resize(bitmapInfo, SKFilterQuality.High);
+                            bitmapsScaled.Add(path, bitmap);
+                        }
+
+                        if (data.Opacity + HighlightOpacity > 0.0)
+                        {
+                            var scaleInfo = info.Height * 1.0f / height;
+                            var rect = new SKRect();
+                            rect.Left = ((float)view.Width - width) * ContentScale / 2.0f;
+                            rect.Top = ((float)view.Height - height) * ContentScale / 2.0f;
+                            rect.Right = info.Width * 1.0f - rect.Left;
+                            rect.Bottom = info.Height * 1.0f - rect.Top;
+                            /*
+                            rect.Left = (view.Width - width) / 2;
+                            rect.Top = (view.Height - height) / 2;
+                            rect.Right = width + rect.Left;
+                            rect.Bottom = height + rect.Top;
+                             */
+
+                            canvas.DrawBitmap(bitmap, rect, new SKPaint() { Color = new SKColor(0, 0, 0, (byte)(128 + HighlightOpacity)) });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        debugLabel.Text = "Paint " + ex.Message + "\n" + ex.StackTrace;
+                        canvas.Dispose();
+                    }
+                }
             }
-
-            foreach (var data in data)
+            catch (Exception ex)
             {
-                try
-                {
-                    var path = data.CanvasName;
-                    var assembly = Application.Current.GetType().Assembly;
-                    Stream stream = assembly.GetManifestResourceStream(path);
-
-                    SKBitmap bitmap = null;
-                    bool needResize = false;
-
-                    if (bitmapsOriginal.ContainsKey(path))
-                    {
-                        bitmap = bitmapsOriginal[path];
-                    }
-                    else
-                    {
-                        bitmap = SKBitmap.Decode(stream);
-                        needResize = true;
-                    }
-
-                    var scale = (float)view.Height * 1.0f / bitmap.Height;
-                    var width = bitmap.Width * scale;
-                    var height = bitmap.Height * scale;
-
-                    if (needResize)
-                    {
-                        bitmapsOriginal.Add(path, bitmap.Copy());
-                        SKImageInfo bitmapInfo = new SKImageInfo((int)width, (int)height);
-                        bitmap = bitmap.Resize(bitmapInfo, SKFilterQuality.High);
-                        bitmapsScaled.Add(path, bitmap);
-                    }
-
-                    if (data.Opacity + HighlightOpacity > 0.0)
-                    {
-                        var scaleInfo = info.Height * 1.0f / height;
-                        var rect = new SKRect();
-                        rect.Left = ((float)view.Width - width) * ContentScale / 2.0f;
-                        rect.Top = ((float)view.Height - height) * ContentScale / 2.0f;
-                        rect.Right = info.Width * 1.0f - rect.Left;
-                        rect.Bottom = info.Height * 1.0f - rect.Top;
-                        /*
-                        rect.Left = (view.Width - width) / 2;
-                        rect.Top = (view.Height - height) / 2;
-                        rect.Right = width + rect.Left;
-                        rect.Bottom = height + rect.Top;
-                         */
-
-                        canvas.DrawBitmap(bitmap, rect, new SKPaint() { Color = new SKColor(0, 0, 0, (byte)(128 + HighlightOpacity)) });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    debugLabel.Text = "Paint " + ex.Message + "\n" + ex.StackTrace;
-                    canvas.Dispose();
-                }
+                int kkk = 0;
             }
         }
 

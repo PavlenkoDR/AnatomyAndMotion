@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MuscleAnatomyAndMotion.Views.FavoriteView">
+    <ContentView.Content>
+        <StackLayout Padding="5" InputTransparent="False">
+            <StackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+            </StackLayout.GestureRecognizers>
+            <Image Source="{Binding CurrentImageSource}"/>
+        </StackLayout>
+    </ContentView.Content>
+</ContentView>

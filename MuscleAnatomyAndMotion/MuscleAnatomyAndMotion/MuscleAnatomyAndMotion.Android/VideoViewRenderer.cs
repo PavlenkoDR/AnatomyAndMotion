@@ -145,6 +145,10 @@ namespace CrossVideoView.Droid
             var newTime = mediaPlayer.CurrentPosition + (int)seekDelta.TotalMilliseconds;
             mediaPlayer.SeekTo(newTime, MediaPlayerSeekMode.Closest);
         }
+        public Xamarin.Forms.Size GetOriginalVideoSize()
+        {
+            return new Xamarin.Forms.Size(mediaPlayer.VideoWidth, mediaPlayer.VideoHeight);
+        }
 
         public void OnPrepared(MediaPlayer mp)
         {
@@ -223,6 +227,7 @@ namespace CrossVideoView.Droid
                 e.NewElement.OnSeekTo += videoElementHandler.SeekTo;
                 e.NewElement.OnSeekForward += videoElementHandler.SeekForward;
                 e.NewElement.OnSeekBackward += videoElementHandler.SeekBackward;
+                e.NewElement.OnGetOriginalVideoSize += videoElementHandler.GetOriginalVideoSize;
 
                 videoElementHandler.OnVideoStart += () => e.NewElement.IsPlaying = videoElementHandler.mediaPlayer.IsPlaying;
                 videoElementHandler.OnVideoStop += () => e.NewElement.IsPlaying = videoElementHandler.mediaPlayer.IsPlaying;

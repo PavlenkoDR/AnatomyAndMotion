@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,44 +14,101 @@ namespace MuscleAnatomyAndMotion
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class FullVideo : ContentPage
     {
-        public List<string> videoUrls { get; set; }
-        public FullVideo(List<string> videoUrls)
+        public class VideoInfo
         {
-            this.videoUrls = videoUrls;
-            BindingContext = this;
+            public string videoUrl { get; set; }
+            public string title { get; set; }
+            public string description { get; set; }
+        }
+        public class Model : ViewModelBase
+        {
+            private List<VideoInfo> _videoUrls;
+            public List<VideoInfo> videoUrls
+            {
+                get => _videoUrls;
+                set
+                {
+                    _videoUrls = value;
+                    RaisePropertyChanged("videoUrls");
+                }
+            }
+            private string _imageUrl;
+            public string imageUrl
+            {
+                get => _imageUrl;
+                set
+                {
+                    _imageUrl = value;
+                    RaisePropertyChanged("imageUrl");
+                }
+            }
+        } 
+        Model model = new Model();
+        public FullVideo(List<VideoInfo> videoUrls)
+        {
+            model.videoUrls = videoUrls;
+            BindingContext = model;
             InitializeComponent();
         }
 
-        private async void Start(string pathRow)
+        private async void Start(VideoInfo pathRow)
         {
-            //await CrossMediaManager.Current.Stop();
-            var assembly = Application.Current.GetType().Assembly;
-
-            Stream stream = assembly.GetManifestResourceStream($"MuscleAnatomyAndMotion.Assets._{pathRow.Replace("/", ".")}");
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"MuscleAnatomyAndMotion.Assets._{pathRow.Replace("/", ".")}");
-            if (File.Exists(path))
+            if (Path.GetExtension(pathRow.videoUrl) == ".mp4")
             {
-                File.Delete(path);
+                //await CrossMediaManager.Current.Stop();
+                Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
+                new FileInfo(path).Directory.Create();
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+                new FileInfo(path).Directory.Create();
+                using (var fileStream = File.OpenWrite(path))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+                videoView.IsVisible = true;
+                videoView.SetVideoPath(path);
+                videoView.Start();
+                videoView.SeekTo(TimeSpan.FromMilliseconds(0));
+                var size = videoView.GetOriginalVideoSize();
+                videoView.HeightRequest = size.Height * videoView.Width / size.Width;
+                model.imageUrl = "";
             }
-            using (var fileStream = File.OpenWrite(path))
+            else
             {
-                await stream.CopyToAsync(fileStream);
+                Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
+                new FileInfo(path).Directory.Create();
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+                new FileInfo(path).Directory.Create();
+                using (var fileStream = File.OpenWrite(path))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+                videoView.Pause();
+                videoView.IsVisible = false;
+                model.imageUrl = path;
             }
-            videoView.SetVideoPath(path);
-            videoView.Start();
-            videoView.SeekTo(TimeSpan.FromMilliseconds(0));
+            shareView.Text = $"{pathRow.title}\n\n{pathRow.description}";
+            shareView.Urls = new List<string>() { pathRow.videoUrl };
+            description.Text = pathRow.description;
+            title.Text = pathRow.title;
         }
 
         protected override void OnDisappearing()
         {
-            base.OnDisappearing();
-
             videoView.Stop();
+            base.OnDisappearing();
         }
 
         private void CarouselView_CurrentItemChanged(object sender, CurrentItemChangedEventArgs e)
         {
-            Start(e.CurrentItem.ToString());
+            Start(e.CurrentItem as VideoInfo);
         }
 
         private void Button_Clicked(object sender, EventArgs e)
@@ -73,6 +131,17 @@ namespace MuscleAnatomyAndMotion
         private void Button_Clicked_2(object sender, EventArgs e)
         {
             videoView.SeekForward();
+        }
+        private void scrollLeftButton_Clicked(object sender, EventArgs e)
+        {
+            var view = ((sender as View).Parent.Parent as Grid).Children.Where(x => x.GetType() == typeof(CarouselView)).First() as CarouselView;
+            view.ScrollTo(Math.Max(view.Position - 1, 0));
+        }
+
+        private void scrollRightButton_Clicked(object sender, EventArgs e)
+        {
+            var view = ((sender as View).Parent.Parent as Grid).Children.Where(x => x.GetType() == typeof(CarouselView)).First() as CarouselView;
+            view.ScrollTo(Math.Min(view.Position + 1, (view.ItemsSource as List<string>).Count));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:crossvideoview="clr-namespace:CrossVideoView"
+             xmlns:crossvideoview="clr-namespace:CrossVideoView" xmlns:muscleanatomyandmotion="clr-namespace:MuscleAnatomyAndMotion" xmlns:views="clr-namespace:MuscleAnatomyAndMotion.Views"
              x:Class="MuscleAnatomyAndMotion.FullVideo" BackgroundColor="Black">
     <ContentPage.Content>
         <Grid>
@@ -13,14 +13,36 @@
                     </DataTemplate>
                 </CarouselView.ItemTemplate>
             </CarouselView>
-            <StackLayout InputTransparent="True" CascadeInputTransparent="False">
-                <crossvideoview:VideoView x:Name="videoView" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" InputTransparent="True"/>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="5">
-                    <Button Text="⏪" FontSize="20" WidthRequest="50" Clicked="Button_Clicked"/>
-                    <Button Text="⏯️" FontSize="20" WidthRequest="50" Clicked="Button_Clicked_1"/>
-                    <Button Text="⏩" FontSize="20" WidthRequest="50" Clicked="Button_Clicked_2"/>
-                </StackLayout>
-                <IndicatorView x:Name="indicator" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" Margin="0, 10, 0, 5"/>
+            <StackLayout x:Name="mainStack" InputTransparent="True" CascadeInputTransparent="False" Margin="10" VerticalOptions="FillAndExpand">
+                <Grid VerticalOptions="Start" InputTransparent="True" CascadeInputTransparent="False">
+                    <Label x:Name="title" TextColor="Orange" FontSize="Title" Margin="0, 0, 40, 0" InputTransparent="True" VerticalOptions="CenterAndExpand"/>
+                    <views:ShareView x:Name="shareView" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand" HeightRequest="40" WidthRequest="40"/>
+                </Grid>
+                <Grid InputTransparent="True" CascadeInputTransparent="False">
+                    <StackLayout InputTransparent="True" CascadeInputTransparent="False" HeightRequest="300">
+                        <crossvideoview:VideoView x:Name="videoView" HorizontalOptions="FillAndExpand" InputTransparent="True"/>
+                        <Image Source="{Binding imageUrl}" InputTransparent="True" VerticalOptions="FillAndExpand"/>
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="5">
+                            <Button Text="⏪" FontSize="20" WidthRequest="50" Clicked="Button_Clicked"/>
+                            <Button Text="⏯️" FontSize="20" WidthRequest="50" Clicked="Button_Clicked_1"/>
+                            <Button Text="⏩" FontSize="20" WidthRequest="50" Clicked="Button_Clicked_2"/>
+                        </StackLayout>
+                        <IndicatorView x:Name="indicator" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" Margin="0, 10, 0, 5"/>
+                    </StackLayout>
+                    <Grid InputTransparent="True" CascadeInputTransparent="False">
+                        <Grid.IsVisible>
+                            <OnPlatform x:TypeArguments="x:Boolean">
+                                <OnPlatform.Platforms>
+                                    <On Platform="Android" Value="False" />
+                                    <On Platform="UWP" Value="True" />
+                                </OnPlatform.Platforms>
+                            </OnPlatform>
+                        </Grid.IsVisible>
+                        <Button Text="⏪" HorizontalOptions="Start" VerticalOptions="Center" Clicked="scrollLeftButton_Clicked"/>
+                        <Button Text="⏩" HorizontalOptions="End" VerticalOptions="Center" Clicked="scrollRightButton_Clicked"/>
+                    </Grid>
+                </Grid>
+                <Label x:Name="description" InputTransparent="True" TextColor="White"/>
             </StackLayout>
         </Grid>
     </ContentPage.Content>

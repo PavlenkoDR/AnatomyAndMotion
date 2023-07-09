@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static MuscleAnatomyAndMotion.App;
 
 namespace MuscleAnatomyAndMotion
 {
@@ -13,21 +14,19 @@ namespace MuscleAnatomyAndMotion
     public partial class MuscleInfoRedirect : ContentView
     {
         public string Description { get; set; }
-        public int FullInfoIndex { get; set; }
-        public int InfoIndex { get; set; }
-        public bool IsButtonEnabled { get => InfoIndex >= 0; }
-        public MuscleInfoRedirect(string Description, int FullInfoIndex, int InfoIndex)
+        public MuscleID link { get; set; }
+        public bool IsButtonEnabled { get => link != null; }
+        public MuscleInfoRedirect(string Description, MuscleID link)
         {
             this.Description = Description;
-            this.FullInfoIndex = FullInfoIndex;
-            this.InfoIndex = InfoIndex;
+            this.link = link;
             BindingContext = this;
             InitializeComponent();
         }
 
         private void Button_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new MuscleInfoPage(App.muscleFullInfos[FullInfoIndex], InfoIndex));
+            Navigation.PushAsync(new MuscleInfoRedirectPage(link));
         }
     }
 }

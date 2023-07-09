@@ -16,7 +16,7 @@
                     <Grid.Effects>
                         <touchtracking:TouchEffect Capture="True" TouchAction="TouchEffect_TouchAction"/>
                     </Grid.Effects>
-                    <skia:SKCanvasView x:Name="Canvas" TranslationX="{Binding xOffset}" Opacity="0.5" PaintSurface="SKCanvasView_PaintSurface"/>
+                    <skia:SKCanvasView x:Name="Canvas" TranslationX="{Binding xOffset}" PaintSurface="SKCanvasView_PaintSurface"/>
                 </Grid>
             </Grid>
             <Grid x:Name="infoHolder" InputTransparent="True" CascadeInputTransparent="False"/>
@@ -31,7 +31,7 @@
             <Button Grid.Column="1" x:Name="RemoveLayer" Text="- layer" Clicked="RemoveLayer_Clicked"/>
             <Button Grid.Column="2" x:Name="Rotate" Text="rotate" Clicked="Rotate_Clicked"/>
         </Grid>
-        <Grid Padding="10" Margin="10">
+        <Grid Padding="10" Margin="10" IsVisible="False">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>

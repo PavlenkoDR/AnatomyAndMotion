@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MuscleAnatomyAndMotion.FiltersView"
+             BackgroundColor="Black">
+    <ContentView.Content>
+        <StackLayout Padding="30">
+            <Frame BorderColor="White" BackgroundColor="Black" CornerRadius="15">
+                <StackLayout BindableLayout.ItemsSource="{Binding filters}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout>
+                                <Label Text="{Binding title}" TextColor="White" FontSize="Title"/>
+                                <StackLayout BindableLayout.ItemsSource="{Binding subfilters}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <CheckBox ClassId="{Binding id}" CheckedChanged="CheckBox_CheckedChanged" HorizontalOptions="FillAndExpand" BackgroundColor="Orange"/>
+                                                <Label Text="{Binding title}" Margin="30, 5, 0, 0" TextColor="Black" FontSize="Subtitle" InputTransparent="True"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </StackLayout>
+                            </StackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+    </ContentView.Content>
+</ContentView>

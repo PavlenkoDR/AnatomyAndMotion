@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:views="clr-namespace:MuscleAnatomyAndMotion.Views"
+             x:Class="MuscleAnatomyAndMotion.FavoritePage"
+             BackgroundColor="Black">
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView x:Name="listView" 
+                      HasUnevenRows="True"
+                      IsGroupingEnabled="True"
+                      SeparatorVisibility="None">
+                <ListView.GroupHeaderTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="20, 10, 20, 10">
+                                <Label Text="{Binding Name}" TextColor="Orange" FontSize="Title"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.GroupHeaderTemplate>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <views:ExerciseView Model="{Binding exerciseViewModel}" IsVisible="{Binding IsExercise}"/>
+                                <views:MuscleView Model="{Binding muscleViewModel}" IsVisible="{Binding IsMuscle}"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

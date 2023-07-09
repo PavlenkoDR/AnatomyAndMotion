@@ -945,6 +945,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EO.WebBrowser" Version="23.2.34" />
+    <PackageReference Include="EO.WebBrowser.Wpf" Version="23.2.34" />
+    <PackageReference Include="Fizzler.Systems.HtmlAgilityPack" Version="1.2.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 

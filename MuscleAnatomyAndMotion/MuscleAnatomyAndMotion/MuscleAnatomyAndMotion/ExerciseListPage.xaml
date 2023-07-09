@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:muscleanatomyandmotion="clr-namespace:MuscleAnatomyAndMotion"
+             xmlns:views="clr-namespace:MuscleAnatomyAndMotion.Views"
+             x:Class="MuscleAnatomyAndMotion.ExerciseListPage"
+             x:DataType="muscleanatomyandmotion:ExerciseListPage"
+             BackgroundColor="Black">
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView x:Name="listView" HasUnevenRows="True">
+                <ListView.Header>
+                    <StackLayout Margin="10, 5, 10, 0" Spacing="0">
+                        <Button Text="Фильтры" Clicked="Button_Clicked"/>
+                        <StackLayout x:Name="filtersHolder"/>
+                        <SearchBar TextChanged="Entry_TextChanged" Margin="5, 0, 5, 0" BackgroundColor="Orange" Placeholder="Поиск по упражнениям"/>
+                    </StackLayout>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <views:ExerciseView/>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

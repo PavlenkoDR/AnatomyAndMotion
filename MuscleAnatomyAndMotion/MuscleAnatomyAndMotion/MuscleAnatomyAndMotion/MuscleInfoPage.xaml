@@ -1,35 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:muscleanatomyandmotion="clr-namespace:MuscleAnatomyAndMotion"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:muscleanatomyandmotion="clr-namespace:MuscleAnatomyAndMotion"
+             xmlns:views="clr-namespace:MuscleAnatomyAndMotion.Views"
              x:Class="MuscleAnatomyAndMotion.MuscleInfoPage" BackgroundColor="Black">
     <ContentPage.Content>
         <StackLayout>
-            <CarouselView x:Name="MainCarousel" ItemsSource="{Binding mainVideos}" VerticalOptions="FillAndExpand" CurrentItemChanged="CarouselView_CurrentItemChanged" IndicatorView="indicator">
-                <CarouselView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout>
-                            <ScrollView VerticalOptions="FillAndExpand" Padding="0" Margin="10">
-                                <StackLayout VerticalOptions="FillAndExpand">
-                                    <Grid>
-                                        <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFit" Source="{Binding MuscleImage}"/>
-                                        <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFit" Source="{Binding MuscleImageCover}"/>
-                                    </Grid>
-                                    <Label Text="{Binding imageDescription}" TextColor="White" Margin="5"/>
-                                    <StackLayout BindableLayout.ItemsSource="{Binding movements}" VerticalOptions="FillAndExpand">
-                                        <BindableLayout.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackLayout>
-                                                    <Button Text="{Binding movementName}" Clicked="Button_Clicked_2"/>
-                                                </StackLayout>
-                                            </DataTemplate>
-                                        </BindableLayout.ItemTemplate>
+            <Grid>
+                <CarouselView x:Name="MainCarousel" ItemsSource="{Binding mainVideos}" VerticalOptions="FillAndExpand" CurrentItemChanged="CarouselView_CurrentItemChanged" IndicatorView="indicator">
+                    <CarouselView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout>
+                                <ScrollView VerticalOptions="FillAndExpand" Padding="0" Margin="10">
+                                    <StackLayout VerticalOptions="FillAndExpand">
+                                        <Grid>
+                                            <Label Text="{Binding muscle}" TextColor="Orange" FontSize="Title" HorizontalOptions="Start" Margin="0, 0, 40, 0"/>
+                                            <StackLayout VerticalOptions="Start" HorizontalOptions="EndAndExpand">
+                                                <views:FavoriteView IsSelected="{Binding isFavorite}" IsVisible="{Binding isHaveFavorite}" HeightRequest="40" WidthRequest="40"/>
+                                                <views:ShareView Text="{Binding shareText}" Urls="{Binding shareUrls}" HeightRequest="40" WidthRequest="40"/>
+                                            </StackLayout>
+                                        </Grid>
+                                        <Grid HeightRequest="500" IsVisible="{Binding IsImageEnabled}">
+                                            <Image Aspect="AspectFit" Source="{Binding MuscleImage}"/>
+                                            <Image Aspect="AspectFit" Source="{Binding MuscleImageCover}"/>
+                                        </Grid>
+                                        <StackLayout Orientation="Horizontal">
+                                            <BoxView BackgroundColor="Blue" CornerRadius="90" WidthRequest="10"/>
+                                            <Label Text="{Binding imageDescriptionOrigin}" TextColor="White" Margin="5"/>
+                                        </StackLayout>
+                                        <StackLayout Orientation="Horizontal">
+                                            <BoxView BackgroundColor="Yellow" CornerRadius="90" WidthRequest="10"/>
+                                            <Label Text="{Binding imageDescriptionInsertion}" TextColor="White" Margin="5"/>
+                                        </StackLayout>
+                                        <StackLayout BindableLayout.ItemsSource="{Binding movements}" VerticalOptions="FillAndExpand">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackLayout>
+                                                        <Button Text="{Binding movementName}" Clicked="Button_Clicked_2"/>
+                                                    </StackLayout>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </StackLayout>
                                     </StackLayout>
-                                </StackLayout>
-                            </ScrollView>
-                        </StackLayout>
-                    </DataTemplate>
-                </CarouselView.ItemTemplate>
-            </CarouselView>
+                                </ScrollView>
+                            </StackLayout>
+                        </DataTemplate>
+                    </CarouselView.ItemTemplate>
+                </CarouselView>
+                <Grid InputTransparent="True" CascadeInputTransparent="False">
+                    <Grid.IsVisible>
+                        <OnPlatform x:TypeArguments="x:Boolean">
+                            <OnPlatform.Platforms>
+                                <On Platform="Android" Value="False" />
+                                <On Platform="UWP" Value="True" />
+                            </OnPlatform.Platforms>
+                        </OnPlatform>
+                    </Grid.IsVisible>
+                    <Button Text="⏪" HorizontalOptions="Start" VerticalOptions="Center" Clicked="scrollLeftButton_Clicked"/>
+                    <Button Text="⏩" HorizontalOptions="End" VerticalOptions="Center" Clicked="scrollRightButton_Clicked"/>
+                </Grid>
+            </Grid>
             <IndicatorView x:Name="indicator" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" Margin="0, 10, 0, 5"/>
         </StackLayout>
     </ContentPage.Content>

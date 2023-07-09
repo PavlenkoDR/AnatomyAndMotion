@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:muscleanatomyandmotion="clr-namespace:MuscleAnatomyAndMotion"
+             xmlns:views="clr-namespace:MuscleAnatomyAndMotion.Views"
+             x:Class="MuscleAnatomyAndMotion.Views.MuscleView">
+  <ContentView.Content>
+        <Frame IsVisible="{Binding isSelected}" BorderColor="White" BackgroundColor="Black" CornerRadius="15" Margin="5">
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+            </Frame.GestureRecognizers>
+            <Grid>
+                <StackLayout>
+                    <Grid>
+                        <Label Text="{Binding subMuscleName}" TextColor="Orange" Margin="0, 0, 40, 0"/>
+                        <StackLayout VerticalOptions="Start" HorizontalOptions="End">
+                            <views:FavoriteView IsSelected="{Binding isFavorite}" HeightRequest="40" WidthRequest="40"/>
+                            <views:ShareView Text="{Binding shareText}" Urls="{Binding shareUrls}" HeightRequest="40" WidthRequest="40"/>
+                        </StackLayout>
+                    </Grid>
+                    <muscleanatomyandmotion:ImageExtended ImgSourceFromObb="{Binding image}" WidthRequest="180" HeightRequest="180" VerticalOptions="CenterAndExpand"/>
+                    <StackLayout Spacing="0">
+                        <StackLayout IsVisible="{Binding isUseBaseDescription}" Spacing="0">
+                            <Label Text="{Binding description.structure}" TextColor="White"/>
+                        </StackLayout>
+                        <StackLayout IsVisible="{Binding isUseSubDescription}" Spacing="0">
+                            <StackLayout Orientation="Horizontal">
+                                <BoxView BackgroundColor="Blue" CornerRadius="90" WidthRequest="10"/>
+                                <Label Text="{Binding subMuscleDescription.origin}" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal">
+                                <BoxView BackgroundColor="Yellow" CornerRadius="90" WidthRequest="10"/>
+                                <Label Text="{Binding subMuscleDescription.insertion}" TextColor="White" VerticalOptions="CenterAndExpand"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </StackLayout>
+                </StackLayout>
+            </Grid>
+        </Frame>
+    </ContentView.Content>
+</ContentView>
