@@ -4,7 +4,7 @@
              x:Class="MuscleAnatomyAndMotion.MuscleInfoRedirect"
              VerticalOptions="Start" HorizontalOptions="Start" InputTransparent="True" CascadeInputTransparent="False">
     <ContentView.Content>
-        <StackLayout InputTransparent="True" CascadeInputTransparent="False" TranslationX="-30" TranslationY="-10" VerticalOptions="Start" HorizontalOptions="Start" Padding="0" Spacing="-6">
+        <StackLayout InputTransparent="True" CascadeInputTransparent="False" VerticalOptions="Start" HorizontalOptions="Start" Padding="0" Spacing="-6">
             <Label InputTransparent="True" BackgroundColor="Orange" Text="{Binding Description}" FontSize="16" WidthRequest="200" LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
             <Button IsEnabled="{Binding IsButtonEnabled}" Text="Open" Clicked="Button_Clicked" FontSize="16" WidthRequest="120" HeightRequest="50" HorizontalOptions="Center"/>
         </StackLayout>

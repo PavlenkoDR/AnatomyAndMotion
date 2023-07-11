@@ -1,4 +1,5 @@
-﻿using MuscleAnatomyAndMotion.Views;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using MuscleAnatomyAndMotion.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,7 +51,7 @@ namespace MuscleAnatomyAndMotion
         public MuscleInfoRedirectPage(MuscleID muscleID)
         {
             this.muscleID = muscleID;
-            var muscle = App.musclesExtended[muscleID.baseID];
+            var muscle = MuscleDictionary.musclesExtended[muscleID.baseID];
             var musclePart = muscle.parts.Where(x => x.id.CompareTo(muscleID) == 0).First();
             muscleViewModel = Utils.As<MuscleExtended, MuscleViewModel>(muscle).SetSubID(muscleID);
 
@@ -80,7 +81,7 @@ namespace MuscleAnatomyAndMotion
             {
                 if (info.exercises.Count() > 0)
                 {
-                    var models = info.exercises.Select(y => Utils.As<Exercise, ExerciseViewModel>(App.exercises[y]).SetID(y)).Select(x =>
+                    var models = info.exercises.Select(y => Utils.As<Exercise, ExerciseViewModel>(MuscleDictionary.exercises[y]).SetID(y)).Select(x =>
                             new ExerciseInfoData()
                             {
                                 exerciseViewModel = x,

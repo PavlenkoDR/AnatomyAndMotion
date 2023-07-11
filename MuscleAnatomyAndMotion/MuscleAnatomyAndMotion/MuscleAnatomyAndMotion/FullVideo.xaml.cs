@@ -51,53 +51,55 @@ namespace MuscleAnatomyAndMotion
             InitializeComponent();
         }
 
-        private async void Start(VideoInfo pathRow)
+        private Task Start(VideoInfo pathRow)
         {
-            if (Path.GetExtension(pathRow.videoUrl) == ".mp4")
-            {
-                //await CrossMediaManager.Current.Stop();
-                Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
-                new FileInfo(path).Directory.Create();
-                if (File.Exists(path))
+            return Device.InvokeOnMainThreadAsync(async () => {
+                if (Path.GetExtension(pathRow.videoUrl) == ".mp4")
                 {
-                    File.Delete(path);
+                    //await CrossMediaManager.Current.Stop();
+                    Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
+                    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
+                    new FileInfo(path).Directory.Create();
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    new FileInfo(path).Directory.Create();
+                    using (var fileStream = File.OpenWrite(path))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+                    videoView.IsVisible = true;
+                    videoView.SetVideoPath(path);
+                    videoView.Start();
+                    videoView.SeekTo(TimeSpan.FromMilliseconds(0));
+                    var size = videoView.GetOriginalVideoSize();
+                    videoView.HeightRequest = size.Height * videoView.Width / size.Width;
+                    model.imageUrl = "";
                 }
-                new FileInfo(path).Directory.Create();
-                using (var fileStream = File.OpenWrite(path))
+                else
                 {
-                    await stream.CopyToAsync(fileStream);
+                    Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
+                    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
+                    new FileInfo(path).Directory.Create();
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    new FileInfo(path).Directory.Create();
+                    using (var fileStream = File.OpenWrite(path))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+                    videoView.Pause();
+                    videoView.IsVisible = false;
+                    model.imageUrl = path;
                 }
-                videoView.IsVisible = true;
-                videoView.SetVideoPath(path);
-                videoView.Start();
-                videoView.SeekTo(TimeSpan.FromMilliseconds(0));
-                var size = videoView.GetOriginalVideoSize();
-                videoView.HeightRequest = size.Height * videoView.Width / size.Width;
-                model.imageUrl = "";
-            }
-            else
-            {
-                Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
-                new FileInfo(path).Directory.Create();
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-                new FileInfo(path).Directory.Create();
-                using (var fileStream = File.OpenWrite(path))
-                {
-                    await stream.CopyToAsync(fileStream);
-                }
-                videoView.Pause();
-                videoView.IsVisible = false;
-                model.imageUrl = path;
-            }
-            shareView.Text = $"{pathRow.title}\n\n{pathRow.description}";
-            shareView.Urls = new List<string>() { pathRow.videoUrl };
-            description.Text = pathRow.description;
-            title.Text = pathRow.title;
+                shareView.Text = $"{pathRow.title}\n\n{pathRow.description}";
+                shareView.Urls = new List<string>() { pathRow.videoUrl };
+                description.Text = pathRow.description;
+                title.Text = pathRow.title;
+            });
         }
 
         protected override void OnDisappearing()
@@ -106,9 +108,31 @@ namespace MuscleAnatomyAndMotion
             base.OnDisappearing();
         }
 
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (Width > height)
+            {
+                mainStack.Orientation = StackOrientation.Horizontal;
+            }
+            else
+            {
+                mainStack.Orientation = StackOrientation.Vertical;
+            }
+        }
+
+        bool isFirstOpen = true;
+
         private void CarouselView_CurrentItemChanged(object sender, CurrentItemChangedEventArgs e)
         {
-            Start(e.CurrentItem as VideoInfo);
+            Task.Run(async () => {
+                if (isFirstOpen)
+                {
+                    await Task.Delay(100);
+                    isFirstOpen = false;
+                }
+                await Start(e.CurrentItem as VideoInfo);
+            });
         }
 
         private void Button_Clicked(object sender, EventArgs e)

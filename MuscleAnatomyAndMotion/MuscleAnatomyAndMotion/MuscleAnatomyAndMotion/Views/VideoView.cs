@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace CrossVideoView
@@ -60,6 +61,13 @@ namespace CrossVideoView
         public Size GetOriginalVideoSize()
         {
             return OnGetOriginalVideoSize.Invoke();
+        }
+        public Task StartVideoLoad()
+        {
+            return Task.Run(()=>
+            {
+                while (GetOriginalVideoSize().Width == 0) { }
+            });
         }
     }
 }

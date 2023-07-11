@@ -43,7 +43,7 @@ namespace MuscleAnatomyAndMotion
         private ExerciseExtended exercise;
         public ExercisePage(ExerciseID exerciseID)
         {
-            exercise = App.exercisesExtended[exerciseID];
+            exercise = MuscleDictionary.exercisesExtended[exerciseID];
             exerciseName = exercise.name;
             exerciseImage = exercise.thumbnail_image_url;
             muscleGroups = new List<Utils.Grouping<string, MuscleViewModel>>();
@@ -72,7 +72,7 @@ namespace MuscleAnatomyAndMotion
             {
                 if (info.muscles.Count() > 0)
                 {
-                    var muscles = info.muscles.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(App.musclesExtended[y.baseID]).SetSubID(y));
+                    var muscles = info.muscles.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y.baseID]).SetSubID(y));
                     muscleGroups.Add(new Utils.Grouping<string, MuscleViewModel>(info.description, muscles));
                 }
             }

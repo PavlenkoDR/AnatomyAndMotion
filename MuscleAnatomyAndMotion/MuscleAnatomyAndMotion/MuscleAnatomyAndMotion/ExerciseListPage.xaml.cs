@@ -22,7 +22,7 @@ namespace MuscleAnatomyAndMotion
         public List<ExerciseViewModel> ExerciseListFiltered { get; set; }
         public ExerciseListPage()
         {
-            ExerciseList = App.exercises.Select(x => Utils.As<Exercise, ExerciseViewModel>(x.Value).SetID(x.Key)).ToList();
+            ExerciseList = MuscleDictionary.exercises.Select(x => Utils.As<Exercise, ExerciseViewModel>(x.Value).SetID(x.Key)).ToList();
             ExerciseListFiltered = ExerciseList;
             InitializeComponent();
         }

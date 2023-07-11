@@ -56,7 +56,7 @@ namespace MuscleAnatomyAndMotion
         {
             List<Utils.Grouping<string, Variant>> favorites = new List<Utils.Grouping<string, Variant>>();
             {
-                var models = LocalFilesController.favoriteData.exerciseIDs.Select(y => Utils.As<Exercise, ExerciseViewModel>(App.exercises[y]).SetID(y)).ToList();
+                var models = LocalFilesController.favoriteData.exerciseIDs.Select(y => Utils.As<Exercise, ExerciseViewModel>(MuscleDictionary.exercises[y]).SetID(y)).ToList();
                 models.ForEach(x => x.isFavorite = true);
                 if (models.Count() > 0)
                 {
@@ -64,7 +64,7 @@ namespace MuscleAnatomyAndMotion
                 }
             }
             {
-                var models = LocalFilesController.favoriteData.muscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(App.musclesExtended[y])).ToList();
+                var models = LocalFilesController.favoriteData.muscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y])).ToList();
                 models.ForEach(x => x.isFavorite = true);
                 if (models.Count() > 0)
                 {
@@ -72,7 +72,7 @@ namespace MuscleAnatomyAndMotion
                 }
             }
             {
-                var models = LocalFilesController.favoriteData.subMuscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(App.musclesExtended[y.baseID]).SetSubID(y)).ToList();
+                var models = LocalFilesController.favoriteData.subMuscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y.baseID]).SetSubID(y)).ToList();
                 models.ForEach(x => x.isFavorite = true);
                 if (models.Count() > 0)
                 {

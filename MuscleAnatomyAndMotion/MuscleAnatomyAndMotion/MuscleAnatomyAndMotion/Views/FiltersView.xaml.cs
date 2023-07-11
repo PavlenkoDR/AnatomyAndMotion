@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,7 @@ namespace MuscleAnatomyAndMotion
         public List<List<FilterID>> selectedFilters = new List<List<FilterID>>();
         public FiltersView()
         {
-            filters = App.filters.Values.ToList();
+            filters = MuscleDictionary.filters.Values.ToList();
 
             InitializeComponent();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -12,7 +13,7 @@ namespace MuscleAnatomyAndMotion
             InitializeComponent();
             FlyoutPage.ListView.ItemSelected += ListView_ItemSelected;
             var menuItems = ((Flyout as MainFlyoutPageFlyout).BindingContext as MainFlyoutPageFlyout.MainFlyoutPageFlyoutViewModel).MenuItems;
-            OpenPage(menuItems.Count > 0 ? menuItems[0] : null);
+            OpenPage(menuItems?.Count > 0 ? menuItems[0] : null);
         }
         
         SortedDictionary<string, List<int>> rotateTimingFrames = new SortedDictionary<string, List<int>>()
@@ -31,7 +32,7 @@ namespace MuscleAnatomyAndMotion
             if (item?.GetType() == typeof(MainFlyoutPageFlyoutMenuItemAnatomy))
             {
                 var itemm = item as MainFlyoutPageFlyoutMenuItemAnatomy;
-                page = new AnatomyPage(itemm.xOffset, itemm.ContentScale, itemm.bodyPartID, itemm.maxLayer, rotateTimingFrames[App.muscleAssets[itemm.bodyPartID].body_part]);
+                page = new AnatomyPage(itemm.xOffset, itemm.ContentScale, itemm.bodyPartID, itemm.maxLayer, rotateTimingFrames[MuscleDictionary.muscleAssets[itemm.bodyPartID].body_part]);
                 page.Title = itemm.Title;
             }
             else if (item?.GetType() == typeof(MainFlyoutPageFlyoutMenuItem))

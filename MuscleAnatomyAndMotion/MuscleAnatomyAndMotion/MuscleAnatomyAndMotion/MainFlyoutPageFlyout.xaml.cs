@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -31,7 +32,7 @@ namespace MuscleAnatomyAndMotion
             
             public MainFlyoutPageFlyoutViewModel()
             {
-                var muscleAssetValuess = App.muscleAssets.ToList();
+                var muscleAssetValuess = MuscleDictionary.muscleAssets.ToList();
                 if (muscleAssetValuess.Count == 0)
                 {
                     return;
@@ -41,12 +42,12 @@ namespace MuscleAnatomyAndMotion
                     new MainFlyoutPageFlyoutMenuItem { Id = 0, Title = "Упражнения" },
                     new MainFlyoutPageFlyoutMenuItem { Id = 1, Title = "Мышцы" },
                     new MainFlyoutPageFlyoutMenuItem { Id = 2, Title = "Избранное" },
-                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 10, ContentScale = 2, Title = "Torso",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "torso").First().Key, xOffset = -2,  maxLayer = 6 },
-                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 11, ContentScale = 3, Title = "Hand Top",  bodyPartID =  muscleAssetValuess.Where(x => x.Value.body_part == "upperArm").First().Key,  maxLayer = 3 },
-                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 12, ContentScale = 3, Title = "Hand Bottom",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "lowerArm").First().Key,  maxLayer = 5 },
-                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 13, ContentScale = 2.8f, Title = "Leg Top",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "upperLegPelvis").First().Key, xOffset = -2,  maxLayer = 6 },
-                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 14, ContentScale = 2.6f, Title = "Leg Bottom",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "lowerLegFoot").First().Key, maxLayer = 4 },
-                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 15, ContentScale = 1.8f, Title = "Head",  bodyPartID =  muscleAssetValuess.Where(x => x.Value.body_part == "headNeck").First().Key, xOffset = -2,  maxLayer = 9 }
+                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 10, ContentScale = 1, Title = "Torso",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "torso").First().Key, xOffset = -2,  maxLayer = 6 },
+                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 11, ContentScale = 1.2f, Title = "Hand Top",  bodyPartID =  muscleAssetValuess.Where(x => x.Value.body_part == "upperArm").First().Key,  maxLayer = 3 },
+                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 12, ContentScale = 2.0f, Title = "Hand Bottom",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "lowerArm").First().Key,  maxLayer = 5 },
+                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 13, ContentScale = 1.8f, Title = "Leg Top",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "upperLegPelvis").First().Key, xOffset = -2,  maxLayer = 6 },
+                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 14, ContentScale = 1.2f, Title = "Leg Bottom",  bodyPartID = muscleAssetValuess.Where(x => x.Value.body_part == "lowerLegFoot").First().Key, maxLayer = 4 },
+                    new MainFlyoutPageFlyoutMenuItemAnatomy { Id = 15, ContentScale = 0.75f, Title = "Head",  bodyPartID =  muscleAssetValuess.Where(x => x.Value.body_part == "headNeck").First().Key, xOffset = -2,  maxLayer = 9 }
                 });
             }
             

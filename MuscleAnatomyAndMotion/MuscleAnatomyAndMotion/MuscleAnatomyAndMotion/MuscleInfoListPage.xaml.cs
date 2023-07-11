@@ -1,4 +1,5 @@
-﻿using MuscleAnatomyAndMotion.Views;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using MuscleAnatomyAndMotion.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,7 +21,7 @@ namespace MuscleAnatomyAndMotion
         public ObservableCollection<MuscleViewModel> MuscleList { get; set; }
         public MuscleInfoListPage()
         {
-            MuscleList = new ObservableCollection<MuscleViewModel>(App.musclesExtended.Values.Select(x => Utils.As<MuscleExtended, MuscleViewModel>(x)));
+            MuscleList = new ObservableCollection<MuscleViewModel>(MuscleDictionary.musclesExtended.Values.Select(x => Utils.As<MuscleExtended, MuscleViewModel>(x)));
             InitializeComponent();
             BindingContext = this;
             mainStack.ItemsSource = MuscleList;

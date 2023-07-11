@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
@@ -55,7 +56,7 @@ namespace MuscleAnatomyAndMotion
         public AnatomyPage(float xOffset, float contentScale, BodyPartID id, int maxLayer, List<int> rotateTimingFrames)
         {
             this.xOffset = xOffset;
-            this.muscleAsset = App.muscleAssets[id];
+            this.muscleAsset = MuscleDictionary.muscleAssets[id];
             this.maxLayer = maxLayer;
             ContentScale = contentScale;
             for (int i = 0; i < rotateTimingFrames.Count; ++i)
@@ -65,6 +66,7 @@ namespace MuscleAnatomyAndMotion
             BindingContext = this;
             InitializeComponent();
         }
+        private string videoPath;
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -72,22 +74,69 @@ namespace MuscleAnatomyAndMotion
             var assembly = Application.Current.GetType().Assembly;
             
             Stream stream = await ExternalResourceController.GetInputStream("ru", $"{muscleAsset.video_url}");
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{muscleAsset.video_url}");
-            if (File.Exists(path))
+            videoPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{muscleAsset.video_url}");
+            if (File.Exists(videoPath))
             {
-                File.Delete(path);
+                File.Delete(videoPath);
             }
-            new FileInfo(path).Directory.Create();
-            using (var fileStream = File.OpenWrite(path))
+            new FileInfo(videoPath).Directory.Create();
+            using (var fileStream = File.OpenWrite(videoPath))
             {
                 await stream.CopyToAsync(fileStream);
             }
 
-            videoView.SetVideoPath(path);
+            videoView.SetVideoPath(videoPath);
             videoView.Start();
             await PlayTo(GetNextTimeSpan(), true);
             videoView.Pause();
             SetupCanvasHolder();
+        }
+
+        private double approvedContentScale;
+
+        private async void SetupContentHolder()
+        {
+            await videoView.StartVideoLoad().ContinueWith(x => {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    var originalVideoSize = videoView.GetOriginalVideoSize();
+                    approvedContentScale = (Width > Height ? 1.2 : 1.0) * ContentScale * Math.Min(BaseContentHolder.Height, BaseContentHolder.Width) / originalVideoSize.Height;
+                    ContentHolder.HeightRequest = approvedContentScale * BaseContentHolder.Height;
+                    ContentHolder.WidthRequest = approvedContentScale * originalVideoSize.Width * BaseContentHolder.Height / originalVideoSize.Height;
+                    ContentHolder.TranslationX = (Width - ContentHolder.WidthRequest) * 0.5;
+                    ContentHolder.TranslationY = (Height - ContentHolder.HeightRequest) * 0.5;
+                    var h = videoView.Height;
+                    var w = videoView.Width;
+                    var h1 = Canvas.Height;
+                    var w2 = Canvas.Width;
+                });
+            });
+
+            videoView.SetVideoPath(videoPath);
+            videoView.Start();
+            await PlayTo(GetNextTimeSpan(), true);
+            videoView.Pause();
+            SetupCanvasHolder();
+        }
+
+        private void CanvasHolder_SizeChanged(object sender, EventArgs e)
+        {
+            SetupContentHolder();
+        }
+
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (width > height)
+            {
+                mainStack.Orientation = StackOrientation.Horizontal;
+                buttonStack.Orientation = StackOrientation.Vertical;
+            }
+            else
+            {
+                mainStack.Orientation = StackOrientation.Vertical;
+                buttonStack.Orientation = StackOrientation.Horizontal;
+            }
         }
 
         private TimeSpan lastSettedPosition = TimeSpan.FromSeconds(0);
@@ -115,7 +164,7 @@ namespace MuscleAnatomyAndMotion
                 Target = x.target_id,
                 Opacity = 0.0f
             }).ToList();
-
+            SetupView(true);
             Canvas.InvalidateSurface();
         }
 
@@ -195,9 +244,8 @@ namespace MuscleAnatomyAndMotion
 
                     foreach (var bitmap in bitmapsScaled)
                     {
-                        var scale = bitmap.Value.Height / view.Height;
-                        var xCasted = args.Location.X * scale - (view.Width - bitmap.Value.Width) / 2;
-                        var yCasted = args.Location.Y * scale - (view.Height - bitmap.Value.Height) / 2;
+                        var xCasted = (args.Location.X);
+                        var yCasted = (args.Location.Y);
                         var pixel = bitmap.Value.GetPixel((int)xCasted, (int)yCasted);
                         if (pixel.Alpha > 0)
                         {
@@ -217,8 +265,32 @@ namespace MuscleAnatomyAndMotion
 
                                     var redirectView = new MuscleInfoRedirect(message, data.Target);
                                     infoHolder.Children.Add(redirectView);
-                                    redirectView.TranslationX = Math.Min(args.Location.X + CanvasHolder.X, infoHolder.Width - redirectView.Width - 80.0);
-                                    redirectView.TranslationY = args.Location.Y + CanvasHolder.Y + 30.0;
+                                    if (Height > Width)
+                                    {
+                                        redirectView.TranslationX = Width * 0.5 - redirectView.Width * 0.5;
+                                        redirectView.TranslationY = args.Location.Y + ContentHolder.TranslationY;
+                                        if (redirectView.TranslationY > Height * 0.5)
+                                        {
+                                            redirectView.TranslationY -= redirectView.Height * 1.5;
+                                        }
+                                        else
+                                        {
+                                            redirectView.TranslationY += redirectView.Height * 0.5;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        redirectView.TranslationY = Height * 0.5 - redirectView.Height * 0.5;
+                                        redirectView.TranslationX = args.Location.X + ContentHolder.TranslationX;
+                                        if (redirectView.TranslationX > Width * 0.5)
+                                        {
+                                            redirectView.TranslationX -= redirectView.Width * 1.5;
+                                        }
+                                        else
+                                        {
+                                            redirectView.TranslationX += redirectView.Width * 0.5;
+                                        }
+                                    }
                                     _ = Task.Delay(4000).ContinueWith((task) =>
                                     {
                                         Device.BeginInvokeOnMainThread(() =>
@@ -301,8 +373,8 @@ namespace MuscleAnatomyAndMotion
                         {
                             var scaleInfo = info.Height * 1.0f / height;
                             var rect = new SKRect();
-                            rect.Left = ((float)view.Width - width) * ContentScale / 2.0f;
-                            rect.Top = ((float)view.Height - height) * ContentScale / 2.0f;
+                            rect.Left = ((float)view.Width - width) * (float)approvedContentScale / 2.0f;
+                            rect.Top = ((float)view.Height - height) * (float)approvedContentScale / 2.0f;
                             rect.Right = info.Width * 1.0f - rect.Left;
                             rect.Bottom = info.Height * 1.0f - rect.Top;
                             /*
