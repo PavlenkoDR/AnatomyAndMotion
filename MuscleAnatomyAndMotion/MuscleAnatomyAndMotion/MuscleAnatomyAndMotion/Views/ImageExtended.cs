@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,14 +20,14 @@ namespace MuscleAnatomyAndMotion
             typeof(ImageExtended),
             propertyChanged: (bindableObject, oldValue, newValue) =>
             {
-                Task.Run(async () => {
-                    if (newValue == null || newValue == "")
+                Device.BeginInvokeOnMainThread(async () => {
+                    if (newValue == null || newValue.ToString() == "")
                     {
                         (bindableObject as ImageExtended).Source = "";
                     }
                     else
                     {
-                        (bindableObject as ImageExtended).Source = await ExternalResourceController.GetImageSource("ru", $"{newValue}");
+                        (bindableObject as ImageExtended).Source = await ResourceController.GetImageSource("ru", $"{newValue}");
                     }
                 });
             }

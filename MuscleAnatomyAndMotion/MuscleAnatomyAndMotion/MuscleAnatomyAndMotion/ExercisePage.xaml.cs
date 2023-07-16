@@ -21,21 +21,44 @@ namespace MuscleAnatomyAndMotion
         public string exerciseImage { get; set; }
         public bool isFavorite
         {
-            get => LocalFilesController.favoriteData.exerciseIDs.Contains(exercise.id);
+            get => FavoriteController.favoriteData.exerciseIDs.Contains(exercise.id);
             set
             {
                 if (value)
                 {
-                    if (!LocalFilesController.favoriteData.exerciseIDs.Contains(exercise.id))
+                    if (!FavoriteController.favoriteData.exerciseIDs.Contains(exercise.id))
                     {
-                        LocalFilesController.favoriteData.exerciseIDs.Add(exercise.id);
+                        FavoriteController.favoriteData.exerciseIDs.Add(exercise.id);
                     }
                 }
                 else
                 {
-                    LocalFilesController.favoriteData.exerciseIDs.Remove(exercise.id);
+                    FavoriteController.favoriteData.exerciseIDs.Remove(exercise.id);
                 }
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("isFavorite"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isFavorite"));
+            }
+        }
+        public bool isDownloaded
+        {
+            get => WebResourceController.downloadedData.exerciseIDs.Contains(exercise.id);
+            set
+            {
+                if (ResourceController.IsOffline)
+                {
+                    return;
+                }
+                if (value)
+                {
+                    if (!WebResourceController.downloadedData.exerciseIDs.Contains(exercise.id))
+                    {
+                        WebResourceController.downloadedData.exerciseIDs.Add(exercise.id);
+                    }
+                }
+                else
+                {
+                    WebResourceController.downloadedData.exerciseIDs.Remove(exercise.id);
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isDownloaded"));
             }
         }
         public string shareText { get => $"{exercise.name}"; }

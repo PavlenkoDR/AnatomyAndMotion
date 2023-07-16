@@ -31,4 +31,18 @@ namespace MuscleAnatomyAndMotion
             }
         }
     }
+
+    public static class ListExtention
+    {
+        public static List<T> AddSequence<T>(this List<T> list, T info)
+        {
+            list.Add(info);
+            return list;
+        }
+        public static List<T> AddRangeSequence<T>(this List<T> list, IEnumerable<T> info)
+        {
+            list.AddRange(info);
+            return list;
+        }
+    }
 }

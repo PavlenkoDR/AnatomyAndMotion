@@ -10,7 +10,7 @@ using Xamarin.Forms.Xaml;
 namespace MuscleAnatomyAndMotion
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class FavoritePage : ContentPage
+    public partial class DownloadsPage : ContentPage
     {
         public class Variant
         {
@@ -19,7 +19,7 @@ namespace MuscleAnatomyAndMotion
             public bool IsExercise { get => exerciseViewModel != null; }
             public bool IsMuscle { get => muscleViewModel != null; }
         }
-        public FavoritePage()
+        public DownloadsPage()
         {
             InitializeComponent();
         }
@@ -31,17 +31,15 @@ namespace MuscleAnatomyAndMotion
                 var models = GetExerciseViewModels();
                 listView.ItemsSource = models;
             });
-            FavoriteController.favoriteData.exerciseIDs.CollectionChanged += UpdateListView;
-            FavoriteController.favoriteData.subMuscleIDs.CollectionChanged += UpdateListView;
-            FavoriteController.favoriteData.muscleIDs.CollectionChanged += UpdateListView;
+            WebResourceController.downloadedData.exerciseIDs.CollectionChanged += UpdateListView;
+            WebResourceController.downloadedData.muscleIDs.CollectionChanged += UpdateListView;
             base.OnAppearing();
         }
 
         protected override void OnDisappearing()
         {
-            FavoriteController.favoriteData.exerciseIDs.CollectionChanged -= UpdateListView;
-            FavoriteController.favoriteData.subMuscleIDs.CollectionChanged -= UpdateListView;
-            FavoriteController.favoriteData.muscleIDs.CollectionChanged -= UpdateListView;
+            WebResourceController.downloadedData.exerciseIDs.CollectionChanged -= UpdateListView;
+            WebResourceController.downloadedData.muscleIDs.CollectionChanged -= UpdateListView;
             base.OnDisappearing();
         }
 
@@ -56,27 +54,19 @@ namespace MuscleAnatomyAndMotion
         {
             List<Utils.Grouping<string, Variant>> favorites = new List<Utils.Grouping<string, Variant>>();
             {
-                var models = FavoriteController.favoriteData.exerciseIDs.Select(y => Utils.As<Exercise, ExerciseViewModel>(MuscleDictionary.exercises[y]).SetID(y)).ToList();
-                models.ForEach(x => x.isFavorite = true);
+                var models = WebResourceController.downloadedData.exerciseIDs.Select(y => Utils.As<Exercise, ExerciseViewModel>(MuscleDictionary.exercises[y]).SetID(y)).ToList();
+                models.ForEach(x => x.isDownloaded = true);
                 if (models.Count() > 0)
                 {
                     favorites.Add(new Utils.Grouping<string, Variant>("Упражнения", models.Select(x => new Variant() { exerciseViewModel = x, muscleViewModel = null })));
                 }
             }
             {
-                var models = FavoriteController.favoriteData.muscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y])).ToList();
-                models.ForEach(x => x.isFavorite = true);
+                var models = WebResourceController.downloadedData.muscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y])).ToList();
+                models.ForEach(x => x.isDownloaded = true);
                 if (models.Count() > 0)
                 {
                     favorites.Add(new Utils.Grouping<string, Variant>("Мышцы", models.Select(x => new Variant() { exerciseViewModel = null, muscleViewModel = x })));
-                }
-            }
-            {
-                var models = FavoriteController.favoriteData.subMuscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y.baseID]).SetSubID(y)).ToList();
-                models.ForEach(x => x.isFavorite = true);
-                if (models.Count() > 0)
-                {
-                    favorites.Add(new Utils.Grouping<string, Variant>("Подкатегории мышц", models.Select(x => new Variant() { exerciseViewModel = null, muscleViewModel = x })));
                 }
             }
             return favorites;

@@ -23,7 +23,6 @@ namespace MuscleAnatomyAndMotion
         public string Title { get; set; }
 
         public BodyPartID bodyPartID { get; set; }
-        public int maxLayer { get; set; }
         public float xOffset { get; set; }
         public float ContentScale { get; set; }
     }

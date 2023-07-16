@@ -206,6 +206,7 @@ namespace MuscleAnatomyAndMotion
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public class MuscleAsset
     {
+        public BodyPartID id { get; set; }
         public string body_part { get; set; }
         public string title { get; set; }
         public string video_url { get; set; }

@@ -15,10 +15,15 @@ namespace MuscleAnatomyAndMotion
     {
         Task GetInitTask();
         Stream GetInputStream(string path);
+        List<string> GetObbDirs();
     }
 
-    public class ExternalResourceController
+    public static class ExternalResourceController
     {
+        public static string BuildFilePath(string lang, string path)
+        {
+            return $"{lang}/{path}";
+        }
         public static async Task<string> ReadString(string lang, string path)
         {
             if (path == null)
@@ -69,12 +74,12 @@ namespace MuscleAnatomyAndMotion
                 return null;
             }
             await DependencyService.Get<IExternalResourceReader>().GetInitTask();
-            var stream = DependencyService.Get<IExternalResourceReader>().GetInputStream($"{lang}/{path}");
+            var stream = DependencyService.Get<IExternalResourceReader>().GetInputStream(BuildFilePath(lang, path));
             if (stream != null)
             {
-                return DependencyService.Get<IExternalResourceReader>().GetInputStream($"{lang}/{path}");
+                return DependencyService.Get<IExternalResourceReader>().GetInputStream(BuildFilePath(lang, path));
             }
-            return DependencyService.Get<IExternalResourceReader>().GetInputStream($"en/{path}");
+            return DependencyService.Get<IExternalResourceReader>().GetInputStream(BuildFilePath("en", path));
         }
         public static async Task<ImageSource> GetImageSource(string lang, string path)
         {
@@ -83,12 +88,12 @@ namespace MuscleAnatomyAndMotion
                 return null;
             }
             await DependencyService.Get<IExternalResourceReader>().GetInitTask();
-            var stream = DependencyService.Get<IExternalResourceReader>().GetInputStream($"{lang}/{path}");
+            var stream = DependencyService.Get<IExternalResourceReader>().GetInputStream(BuildFilePath(lang, path));
             if (stream != null)
             {
-                return ImageSource.FromStream(() => DependencyService.Get<IExternalResourceReader>().GetInputStream($"{lang}/{path}"));
+                return ImageSource.FromStream(() => DependencyService.Get<IExternalResourceReader>().GetInputStream(BuildFilePath(lang, path)));
             }
-            return ImageSource.FromStream(() => DependencyService.Get<IExternalResourceReader>().GetInputStream($"en/{path}"));
+            return ImageSource.FromStream(() => DependencyService.Get<IExternalResourceReader>().GetInputStream(BuildFilePath("en", path)));
         }
     }
 }

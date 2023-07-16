@@ -31,19 +31,19 @@ namespace MuscleAnatomyAndMotion
         public List<MovementInfo> movements { get; set; }
         public bool isFavorite
         {
-            get => LocalFilesController.favoriteData.subMuscleIDs.Contains(id);
+            get => FavoriteController.favoriteData.subMuscleIDs.Contains(id);
             set
             {
                 if (value && id != null)
                 {
-                    if (!LocalFilesController.favoriteData.subMuscleIDs.Contains(id))
+                    if (!FavoriteController.favoriteData.subMuscleIDs.Contains(id))
                     {
-                        LocalFilesController.favoriteData.subMuscleIDs.Add(id);
+                        FavoriteController.favoriteData.subMuscleIDs.Add(id);
                     }
                 }
                 else
                 {
-                    LocalFilesController.favoriteData.subMuscleIDs.Remove(id);
+                    FavoriteController.favoriteData.subMuscleIDs.Remove(id);
                 }
                 RaisePropertyChanged("isFavorite");
             }
@@ -59,20 +59,6 @@ namespace MuscleAnatomyAndMotion
         public string strengthVideoUrl { get; set; }
         public string stretchVideoUrl { get; set; }
         public string originAndInsertionVideoUrl { get; set; }
-    }
-
-    public static class ListExtention
-    {
-        public static List<T> AddSequence<T>(this List<T> list, T info)
-        {
-            list.Add(info);
-            return list;
-        }
-        public static List<T> AddRangeSequence<T>(this List<T> list, IEnumerable<T> info)
-        {
-            list.AddRange(info);
-            return list;
-        }
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -106,8 +92,8 @@ namespace MuscleAnatomyAndMotion
                         })
                     ),
                     muscle = x.name,
-                    MuscleImage = ExternalResourceController.GetImageSource("ru", $"{x.image_url}").Result,
-                    MuscleImageCover = ExternalResourceController.GetImageSource("ru", $"{x.overlay_image_url}").Result
+                    MuscleImage = ResourceController.GetImageSource("ru", $"{x.image_url}").Result,
+                    MuscleImageCover = ResourceController.GetImageSource("ru", $"{x.overlay_image_url}").Result
                 })),
                 originAndInsertionVideoUrl = info.origin?.video_url,
                 moreInfoText = info.description.actions,

@@ -1,5 +1,8 @@
 ﻿using MuscleAnatomyAndMotion.Controllers;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -32,7 +35,7 @@ namespace MuscleAnatomyAndMotion
             if (item?.GetType() == typeof(MainFlyoutPageFlyoutMenuItemAnatomy))
             {
                 var itemm = item as MainFlyoutPageFlyoutMenuItemAnatomy;
-                page = new AnatomyPage(itemm.xOffset, itemm.ContentScale, itemm.bodyPartID, itemm.maxLayer, rotateTimingFrames[MuscleDictionary.muscleAssets[itemm.bodyPartID].body_part]);
+                page = new AnatomyPage(itemm.xOffset, itemm.ContentScale, itemm.bodyPartID, rotateTimingFrames[MuscleDictionary.muscleAssets[itemm.bodyPartID].body_part]);
                 page.Title = itemm.Title;
             }
             else if (item?.GetType() == typeof(MainFlyoutPageFlyoutMenuItem))
@@ -53,9 +56,27 @@ namespace MuscleAnatomyAndMotion
                     page = new FavoritePage();
                     page.Title = itemm.Title;
                 }
+                else if (itemm.Id == 3)
+                {
+                    page = new DownloadsPage();
+                    page.Title = itemm.Title;
+                }
             }
 
-            Detail = new NavigationPage(page) { BarBackgroundColor = Color.Orange, BarTextColor = Color.Black, BackgroundColor = Color.Black };
+            var navigationPage = new NavigationPage(page) { BarBackgroundColor = Color.Orange, BarTextColor = Color.Black, BackgroundColor = Color.Black };
+            if (!ResourceController.IsOffline)
+            {
+                navigationPage.ToolbarItems.Add(new ToolbarItem("Очистить кэш", null, () => {
+                    Task.Run(() => {
+                        Device.BeginInvokeOnMainThread(async () => {
+                            await Navigation.PushModalAsync(new LoadingBanner() { Progress = "Очистка кэша" });
+                            WebResourceController.ClearCache();
+                            await Navigation.PopModalAsync();
+                        });
+                    });
+                }));
+            }
+            Detail = navigationPage;
             Application.Current.SendResume();
             IsPresented = false;
 

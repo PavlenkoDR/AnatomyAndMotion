@@ -11,6 +11,7 @@ namespace CrossVideoView
         public delegate void VideoSetTimeEvent(TimeSpan time);
         public delegate Size VideoGetSize();
 
+        public event VideoEvent OnCreated;
         public event VideoEvent OnStart;
         public event VideoEvent OnStop;
         public event VideoEvent OnPlay;
@@ -22,6 +23,10 @@ namespace CrossVideoView
         public event VideoEvent OnSeekBackward;
         public event VideoGetSize OnGetOriginalVideoSize;
         public bool IsPlaying { get; set; }
+        public void Created()
+        {
+            OnCreated?.Invoke();
+        }
         public void Start()
         {
             OnStart?.Invoke();
@@ -64,9 +69,11 @@ namespace CrossVideoView
         }
         public Task StartVideoLoad()
         {
-            return Task.Run(()=>
+            return Task.Run(async ()=>
             {
-                while (GetOriginalVideoSize().Width == 0) { }
+                while (GetOriginalVideoSize().Width == 0) {
+                    await Task.Delay(1000);
+                }
             });
         }
     }

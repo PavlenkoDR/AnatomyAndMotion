@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MuscleAnatomyAndMotion.Controllers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -57,17 +58,20 @@ namespace MuscleAnatomyAndMotion
                 if (Path.GetExtension(pathRow.videoUrl) == ".mp4")
                 {
                     //await CrossMediaManager.Current.Stop();
-                    Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
+                    Stream stream = await ResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
                     string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
-                    new FileInfo(path).Directory.Create();
-                    if (File.Exists(path))
+                    if (WebResourceController.IsFileDownloaded("ru", $"{pathRow.videoUrl}"))
+                    {
+                        path = (stream as FileStream).Name;
+                    }
+                    else if (File.Exists(path))
                     {
                         File.Delete(path);
-                    }
-                    new FileInfo(path).Directory.Create();
-                    using (var fileStream = File.OpenWrite(path))
-                    {
-                        await stream.CopyToAsync(fileStream);
+                        new FileInfo(path).Directory.Create();
+                        using (var fileStream = File.OpenWrite(path))
+                        {
+                            await stream.CopyToAsync(fileStream);
+                        }
                     }
                     videoView.IsVisible = true;
                     videoView.SetVideoPath(path);
@@ -79,10 +83,10 @@ namespace MuscleAnatomyAndMotion
                 }
                 else
                 {
-                    Stream stream = await ExternalResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
+                    Stream stream = await ResourceController.GetInputStream("ru", $"{pathRow.videoUrl}");
                     string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{pathRow.videoUrl}");
                     new FileInfo(path).Directory.Create();
-                    if (File.Exists(path))
+                    if (File.Exists(path) && !WebResourceController.IsFileDownloaded("ru", $"{pathRow.videoUrl}"))
                     {
                         File.Delete(path);
                     }
@@ -126,12 +130,29 @@ namespace MuscleAnatomyAndMotion
         private void CarouselView_CurrentItemChanged(object sender, CurrentItemChangedEventArgs e)
         {
             Task.Run(async () => {
+
+                if (!ResourceController.IsOffline)
+                {
+                    await Device.InvokeOnMainThreadAsync(async () =>
+                    {
+                        var loadingBanner = new LoadingBanner();
+                        loadingBanner.Progress = "Загрузка видео";
+                        await Navigation.PushModalAsync(loadingBanner);
+                    });
+                }
                 if (isFirstOpen)
                 {
                     await Task.Delay(100);
                     isFirstOpen = false;
                 }
                 await Start(e.CurrentItem as VideoInfo);
+                if (!ResourceController.IsOffline)
+                {
+                    await Device.InvokeOnMainThreadAsync(async () =>
+                    {
+                        await Navigation.PopModalAsync();
+                    });
+                }
             });
         }
 

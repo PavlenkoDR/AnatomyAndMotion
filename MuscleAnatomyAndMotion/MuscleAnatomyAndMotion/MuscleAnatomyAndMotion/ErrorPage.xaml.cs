@@ -15,6 +15,17 @@ namespace MuscleAnatomyAndMotion
         public ErrorPage()
         {
             InitializeComponent();
+
+            var obbDirs = DependencyService.Get<IExternalResourceReader>().GetObbDirs();
+
+            var message = "Положите файл 'main.1.com.companyname.muscleanatomyandmotion.obb' в одну из папок и перезагрузите приложение:\n";
+            foreach (var path in obbDirs)
+            {
+                message += $"{path}\n";
+            }
+            message += "Если файл в папке лежит, попробуйте другую из списка";
+            errorLabel.Text = message;
+
         }
     }
 }

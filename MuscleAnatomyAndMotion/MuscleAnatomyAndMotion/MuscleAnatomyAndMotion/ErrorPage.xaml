@@ -4,7 +4,7 @@
              x:Class="MuscleAnatomyAndMotion.ErrorPage" BackgroundColor="Black">
     <ContentPage.Content>
         <StackLayout Padding="20" Spacing="0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
-            <Label Text="Положите файл 'main.1.com.companyname.muscleanatomyandmotion.obb' в папку 'Android/obb' и перезагрузите приложение"
+            <Label x:Name="errorLabel"
                    TextColor="Orange"/>
         </StackLayout>
     </ContentPage.Content>

@@ -4,8 +4,8 @@
              x:Class="MuscleAnatomyAndMotion.LoadingScreenPage" BackgroundColor="Black">
     <ContentPage.Content>
         <StackLayout VerticalOptions="CenterAndExpand">
-            <Label Text="Загрузка" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
-            <Label Text="{Binding LoadingProgress}" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
+            <Label x:Name="loadingLabel" Text="Загрузка" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
+            <Label x:Name="loadingProgress" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

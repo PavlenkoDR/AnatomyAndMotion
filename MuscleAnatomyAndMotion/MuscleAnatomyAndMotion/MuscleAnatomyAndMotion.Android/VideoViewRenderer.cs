@@ -237,6 +237,10 @@ namespace CrossVideoView.Droid
 
             FragmentManager.BeginTransaction().Replace(Id, fragment = videoElementHandler).Commit();
             ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+            if (e.NewElement != null)
+            {
+                e.NewElement.Created();
+            }
         }
 
         void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

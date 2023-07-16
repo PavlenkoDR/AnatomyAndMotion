@@ -29,10 +29,12 @@ namespace MuscleAnatomyAndMotion
 
         protected override void OnAppearing()
         {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                listView.ItemsSource = null;
-                listView.ItemsSource = ExerciseListFiltered;
+            Task.Run(()=> {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    listView.ItemsSource = null;
+                    listView.ItemsSource = ExerciseListFiltered;
+                });
             });
             base.OnAppearing();
         }

@@ -103,33 +103,56 @@ namespace MuscleAnatomyAndMotion.Views
         public bool isFavorite
         {
             get => subID != null ?
-                LocalFilesController.favoriteData.subMuscleIDs.Contains(subID) :
-                LocalFilesController.favoriteData.muscleIDs.Contains(id);
+                FavoriteController.favoriteData.subMuscleIDs.Contains(subID) :
+                FavoriteController.favoriteData.muscleIDs.Contains(id);
             set
             {
                 if (value)
                 {
                     if (subID == null)
                     {
-                        if (!LocalFilesController.favoriteData.muscleIDs.Contains(id))
+                        if (!FavoriteController.favoriteData.muscleIDs.Contains(id))
                         {
-                            LocalFilesController.favoriteData.muscleIDs.Add(id);
+                            FavoriteController.favoriteData.muscleIDs.Add(id);
                         }
                     }
                     else
                     {
-                        if (!LocalFilesController.favoriteData.subMuscleIDs.Contains(subID))
+                        if (!FavoriteController.favoriteData.subMuscleIDs.Contains(subID))
                         {
-                            LocalFilesController.favoriteData.subMuscleIDs.Add(subID);
+                            FavoriteController.favoriteData.subMuscleIDs.Add(subID);
                         }
                     }
                 }
                 else
                 {
-                    LocalFilesController.favoriteData.muscleIDs.Remove(id);
-                    LocalFilesController.favoriteData.subMuscleIDs.Remove(subID);
+                    FavoriteController.favoriteData.muscleIDs.Remove(id);
+                    FavoriteController.favoriteData.subMuscleIDs.Remove(subID);
                 }
                 RaisePropertyChanged("isFavorite");
+            }
+        }
+        public bool isDownloaded
+        {
+            get => WebResourceController.downloadedData.muscleIDs.Contains(id);
+            set
+            {
+                if (ResourceController.IsOffline)
+                {
+                    return;
+                }
+                if (value)
+                {
+                    if (!WebResourceController.downloadedData.muscleIDs.Contains(id))
+                    {
+                        WebResourceController.downloadedData.muscleIDs.Add(id);
+                    }
+                }
+                else
+                {
+                    WebResourceController.downloadedData.muscleIDs.Remove(id);
+                }
+                RaisePropertyChanged("isDownloaded");
             }
         }
         private bool _isUseSubDescription = false;

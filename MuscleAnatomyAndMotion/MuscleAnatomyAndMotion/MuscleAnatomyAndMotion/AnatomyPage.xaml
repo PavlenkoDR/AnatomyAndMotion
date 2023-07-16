@@ -4,7 +4,10 @@
              xmlns:touchtracking="clr-namespace:TouchTracking"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              xmlns:crossvideoview="clr-namespace:CrossVideoView"
-             x:Class="MuscleAnatomyAndMotion.AnatomyPage">
+             xmlns:muscleanatomyandmotion="clr-namespace:MuscleAnatomyAndMotion"
+             xmlns:views="clr-namespace:MuscleAnatomyAndMotion.Views"
+             x:Class="MuscleAnatomyAndMotion.AnatomyPage"
+             Title="DownloadBanner">
 
     <StackLayout BackgroundColor="Black" x:Name="mainStack">
         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
@@ -13,11 +16,13 @@
                     <Grid.Effects>
                         <touchtracking:TouchEffect Capture="True" TouchAction="TouchEffect_TouchAction"/>
                     </Grid.Effects>
-                    <crossvideoview:VideoView x:Name="videoView" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+                    <crossvideoview:VideoView x:Name="videoView" OnCreated="videoView_OnCreated" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
                     <skia:SKCanvasView x:Name="Canvas" TranslationX="{Binding xOffset}" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" PaintSurface="SKCanvasView_PaintSurface"/>
+                    <muscleanatomyandmotion:ImageExtended x:Name="CurrentCanvas" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Opacity="0.5"/>
                 </Grid>
             </AbsoluteLayout>
             <Grid x:Name="infoHolder" InputTransparent="True" CascadeInputTransparent="False"/>
+            <views:DownloadHDView IsSelected="{Binding isDownloaded}" HeightRequest="60" WidthRequest="60" HorizontalOptions="End" VerticalOptions="Start" Margin="10"/>
         </Grid>
         <StackLayout x:Name="buttonStack" Orientation="Horizontal" Padding="10" Margin="10" VerticalOptions="Center" HorizontalOptions="Center">
             <Button WidthRequest="100" x:Name="AddLayer" Text="+ layer" Clicked="AddLayer_Clicked"/>

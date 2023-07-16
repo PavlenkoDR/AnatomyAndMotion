@@ -17,6 +17,7 @@ using Java.IO;
 using System.Drawing;
 using Android.Graphics.Drawables;
 using Android.Graphics;
+using MuscleAnatomyAndMotion.Controllers;
 
 [assembly: Xamarin.Forms.Dependency(typeof(MuscleAnatomyAndMotion.Droid.ExternalResourceReader))]
 [assembly: Xamarin.Forms.Dependency(typeof(MuscleAnatomyAndMotion.Droid.IntentController))]
@@ -75,9 +76,28 @@ namespace MuscleAnatomyAndMotion.Droid
             {
                 return;
             }
-
-            var expansionFilePath = System.IO.Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, "Android/obb/main.1.com.companyname.muscleanatomyandmotion.obb");
-            expansionFile = APKExpansionSupport.GetResourceZipFile(new[] { expansionFilePath });
+            if (await Permissions.CheckStatusAsync<Permissions.Media>() != PermissionStatus.Granted &&
+                await Permissions.RequestAsync<Permissions.Media>() != PermissionStatus.Granted)
+            {
+                return;
+            }
+            var root = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+            var directoryPath = System.IO.Path.Combine(root, "Android/obb");
+            var obbDirs = Application.Context.GetObbDirs().Select(x => x.AbsolutePath).ToList();
+            obbDirs.Add(directoryPath);
+            
+            foreach (var obbPath in obbDirs)
+            {
+                var obbFilePath = System.IO.Path.Combine(obbPath, "main.1.com.companyname.muscleanatomyandmotion.obb");
+                if (System.IO.File.Exists(obbFilePath))
+                {
+                    expansionFile = APKExpansionSupport.GetResourceZipFile(new[] { obbFilePath });
+                }
+                if (expansionFile != null)
+                {
+                    break;
+                }
+            }
         }
         public ExternalResourceReader()
         {
@@ -93,19 +113,22 @@ namespace MuscleAnatomyAndMotion.Droid
         {
             return initTask;
         }
+
+        public List<string> GetObbDirs()
+        {
+            var root = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+            var directoryPath = System.IO.Path.Combine(root, "Android/obb");
+            var obbDirs = Application.Context.GetObbDirs().Select(x => x.AbsolutePath).ToList();
+            obbDirs.Add(directoryPath);
+            return obbDirs.ToList();
+        }
     }
 
     public class IntentController : Controllers.IIntentController
     {
-        private static string cachePath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "filesCache.json");
         List<string> filesCache = new List<string>();
         public void ShareMediaFile(string text, List<string> filesPath)
         {
-            if (System.IO.File.Exists(cachePath))
-            {
-                var jsonCache = System.IO.File.ReadAllText(cachePath);
-                filesCache = JsonConvert.DeserializeObject<List<string>>(jsonCache);
-            }
             for (int i = 0; i < filesPath.Count; ++i)
             {
                 var pathRow = filesPath[i];
@@ -119,7 +142,7 @@ namespace MuscleAnatomyAndMotion.Droid
                     filesPath[i] = path;
                     continue;
                 }
-                Stream stream = ExternalResourceController.GetInputStream("ru", $"{pathRow}").Result;
+                Stream stream = ResourceController.GetInputStream("ru", $"{pathRow}").Result;
                 new FileInfo(path).Directory.Create();
                 //FileOutputStream fileOutputStream = new FileOutputStream(new Java.IO.File(path));
                 //var bytes = ((MemoryStream)stream).ToArray();
@@ -131,13 +154,12 @@ namespace MuscleAnatomyAndMotion.Droid
                 //fileOutputStream.Write(bytes);
                 //fileOutputStream.Close();
                 filesPath[i] = path;
+                WebResourceController.downloadedData.cache.Add(path);
 
                 var mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile);
                 mediaScanIntent.SetData(Android.Net.Uri.FromFile(new Java.IO.File(path)));
                 Application.Context.SendBroadcast(mediaScanIntent);
             }
-            filesCache.AddRange(filesPath);
-            System.IO.File.WriteAllText(cachePath, JsonConvert.SerializeObject(filesCache));
             if (Permissions.CheckStatusAsync<Permissions.Media>().Result != PermissionStatus.Granted &&
                 Permissions.RequestAsync<Permissions.Media>().Result != PermissionStatus.Granted)
             {

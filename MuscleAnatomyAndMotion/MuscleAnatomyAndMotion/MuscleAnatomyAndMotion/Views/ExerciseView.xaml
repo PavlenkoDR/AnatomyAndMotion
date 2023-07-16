@@ -19,6 +19,7 @@
                     </StackLayout>
                     <StackLayout VerticalOptions="Start" HorizontalOptions="End">
                         <views:FavoriteView IsSelected="{Binding isFavorite}" HeightRequest="40" WidthRequest="40"/>
+                        <views:DownloadHDView IsSelected="{Binding isDownloaded}" HeightRequest="40" WidthRequest="40"/>
                         <views:ShareView Text="{Binding shareText}" Urls="{Binding shareUrls}" HeightRequest="40" WidthRequest="40"/>
                     </StackLayout>
                 </Grid>

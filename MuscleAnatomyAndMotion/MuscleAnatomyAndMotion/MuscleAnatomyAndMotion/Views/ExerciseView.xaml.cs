@@ -43,35 +43,75 @@ namespace MuscleAnatomyAndMotion.Views
         public bool isSelected { get => isFiltered && isSearched; }
         public bool isFavorite
         {
-            get => LocalFilesController.favoriteData.exerciseIDs.Contains(id);
+            get => FavoriteController.favoriteData.exerciseIDs.Contains(id);
             set
             {
-                if (value)
-                {
-                    if (!LocalFilesController.favoriteData.exerciseIDs.Contains(id))
-                    {
-                        LocalFilesController.favoriteData.exerciseIDs.Add(id);
-                    }
-                }
-                else
-                {
-                    LocalFilesController.favoriteData.exerciseIDs.Remove(id);
-                }
-                RaisePropertyChanged("isFavorite");
+                Task.Run(() => {
+                    Device.BeginInvokeOnMainThread(() => {
+                        if (value)
+                        {
+                            if (!FavoriteController.favoriteData.exerciseIDs.Contains(id))
+                            {
+                                FavoriteController.favoriteData.exerciseIDs.Add(id);
+                            }
+                        }
+                        else
+                        {
+                            FavoriteController.favoriteData.exerciseIDs.Remove(id);
+                        }
+                        RaisePropertyChanged("isFavorite");
+                    });
+                    Task.Yield();
+                });
+            }
+        }
+        public bool isDownloaded
+        {
+            get => WebResourceController.downloadedData.exerciseIDs.Contains(id);
+            set
+            {
+                Task.Run(()=> {
+                    Device.BeginInvokeOnMainThread(async () => {
+                        if (ResourceController.IsOffline)
+                        {
+                            return;
+                        }
+                        if (value)
+                        {
+                            if (!WebResourceController.downloadedData.exerciseIDs.Contains(id))
+                            {
+                                var loadingBanner = new LoadingBanner();
+                                loadingBanner.Progress = $"Загрузка и сохранение";
+                                await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
+                                WebResourceController.downloadedData.exerciseIDs.Add(id);
+                                await Application.Current.MainPage.Navigation.PopModalAsync();
+                            }
+                        }
+                        else
+                        {
+                            var loadingBanner = new LoadingBanner();
+                            loadingBanner.Progress = $"Удаление из сохраненных";
+                            await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
+                            WebResourceController.downloadedData.exerciseIDs.Remove(id);
+                            await Application.Current.MainPage.Navigation.PopModalAsync();
+                        }
+                        RaisePropertyChanged("isDownloaded");
+                    });
+                    Task.Yield();
+                });
             }
         }
         public string shareText { get => $"{name}\n\n{target_muscle}"; set { } }
         public List<string> shareUrls { get => new List<string>() { thumbnail_image_url }; set { } }
     }
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ExerciseView : ContentView, INotifyPropertyChanged
+    public partial class ExerciseView : ContentView
     {
         public ExerciseView()
         {
             InitializeComponent();
         }
         
-        public new event PropertyChangedEventHandler PropertyChanged;
         public static readonly BindableProperty ModelProperty = BindableProperty.Create(
             nameof(Model),
             typeof(ExerciseViewModel),
@@ -91,8 +131,15 @@ namespace MuscleAnatomyAndMotion.Views
             }
             set
             {
-                SetValue(ModelProperty, value);
-                updateModel();
+                Task.Run(() =>
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        SetValue(ModelProperty, value);
+                        updateModel();
+                    });
+                    Task.Yield();
+                });
             }
         }
         private void updateModel()
