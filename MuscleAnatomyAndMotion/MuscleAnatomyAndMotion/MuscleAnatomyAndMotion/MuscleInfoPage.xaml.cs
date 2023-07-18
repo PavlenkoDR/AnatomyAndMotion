@@ -68,7 +68,7 @@ namespace MuscleAnatomyAndMotion
         public int InfoIndex { get; set; }
         public MuscleInfoPage(BaseMuscleID muscleID, SubMuscleID InfoIndex)
         {
-            MuscleExtended info = MuscleDictionary.musclesExtended[muscleID];
+            MuscleExtended info = MuscleDictionary.GetCurrent().musclesExtended[muscleID];
             this.InfoIndex = int.Parse(InfoIndex.ToString());
             this.Title = info.name;
             this.info = new MuscleFullInfo()

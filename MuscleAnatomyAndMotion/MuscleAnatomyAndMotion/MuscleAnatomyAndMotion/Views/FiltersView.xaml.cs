@@ -24,7 +24,7 @@ namespace MuscleAnatomyAndMotion
         public List<List<FilterID>> selectedFilters = new List<List<FilterID>>();
         public FiltersView()
         {
-            filters = MuscleDictionary.filters.Values.ToList();
+            filters = MuscleDictionary.GetCurrent().filters.Values.ToList();
 
             InitializeComponent();
 

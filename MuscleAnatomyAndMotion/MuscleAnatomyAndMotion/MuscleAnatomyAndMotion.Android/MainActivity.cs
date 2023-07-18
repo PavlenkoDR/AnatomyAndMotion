@@ -18,15 +18,25 @@ using System.Drawing;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using MuscleAnatomyAndMotion.Controllers;
+using Firebase.Messaging;
+using Firebase.Iid;
+using Android.Support.V4.App;
+using Android.Util;
+using AndroidX.Core.App;
+using Firebase.RemoteConfig;
+using Java.Util.Concurrent.Locks;
 
 [assembly: Xamarin.Forms.Dependency(typeof(MuscleAnatomyAndMotion.Droid.ExternalResourceReader))]
 [assembly: Xamarin.Forms.Dependency(typeof(MuscleAnatomyAndMotion.Droid.IntentController))]
+[assembly: Xamarin.Forms.Dependency(typeof(MuscleAnatomyAndMotion.Droid.UpdateController))]
+[assembly: Xamarin.Forms.Dependency(typeof(MuscleAnatomyAndMotion.Droid.MyRemoteConfigurationService))]
 namespace MuscleAnatomyAndMotion.Droid
 {
     [Activity(Label = "MuscleAnatomyAndMotion", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-
+        internal static readonly string CHANNEL_ID = "fb_notification_channel";
+        internal static readonly int NOTIFICATION_ID = 100;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -40,7 +50,29 @@ namespace MuscleAnatomyAndMotion.Droid
                  .PenaltyLog();
             StrictMode.SetVmPolicy(builder.Build());
             builder.DetectFileUriExposure();
+            CreateNotificationChannel();
 
+            try
+            {
+                {
+                    FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder().Build();
+                    var waiter = FirebaseRemoteConfig.Instance.SetConfigSettingsAsync(configSettings);
+                    lock (waiter)
+                    {
+                        while(waiter.IsComplete == false && waiter.IsCanceled == false) { }
+                    }
+                }
+                {
+                    var waiter = FirebaseRemoteConfig.Instance.SetDefaultsAsync(Resource.Xml.remote_config_defaults);
+                    lock (waiter)
+                    {
+                        while (waiter.IsComplete == false && waiter.IsCanceled == false) { }
+                    }
+                }
+            }
+            finally
+            {
+            }
             //string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
 
             //var context = Application.Context;
@@ -55,6 +87,69 @@ namespace MuscleAnatomyAndMotion.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+        void CreateNotificationChannel()
+        {
+            if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+            {
+                return;
+            }
+
+            var channel = new NotificationChannel(CHANNEL_ID,
+                                                  "FCM Notifications",
+                                                  NotificationImportance.Default)
+            {
+
+                Description = "Firebase Cloud Messages appear in this channel"
+            };
+
+            var notificationManager = (NotificationManager)GetSystemService(Android.Content.Context.NotificationService);
+            notificationManager.CreateNotificationChannel(channel);
+        }
+    }
+
+    public class UpdateController : IUpdateController
+    {
+        public string getCurrentVersion()
+        {
+            return Application.Context.ApplicationContext.PackageManager.GetPackageInfo(Application.Context.ApplicationContext.PackageName, 0).VersionCode.ToString();
+        }
+    }
+
+    public class MyRemoteConfigurationService : IRemoteConfigurationService
+    {
+        public MyRemoteConfigurationService()
+        {
+            Run();
+        }
+
+        private async void Run()
+        {
+            await FetchAndActivateAsync();
+        }
+
+        public async Task FetchAndActivateAsync()
+        {
+            long cacheExpiration = 60 * 60;
+            try
+            {
+                await FirebaseRemoteConfig.Instance.FetchAsync(cacheExpiration);
+                FirebaseRemoteConfig.Instance.Activate().Wait();
+            }
+            catch
+            {
+            }
+        }
+
+        public async Task<TInput> GetAsync<TInput>(string key)
+        {
+            var settings = FirebaseRemoteConfig.Instance.GetString(key);
+            return await Task.FromResult(JsonConvert.DeserializeObject<TInput>(settings));
+        }
+
+        public async Task<string> GetAsync(string key)
+        {
+            return FirebaseRemoteConfig.Instance.GetString(key);
         }
     }
 

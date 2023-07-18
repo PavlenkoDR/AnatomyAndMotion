@@ -72,16 +72,19 @@ namespace MuscleAnatomyAndMotion.Views
             {
                 Task.Run(()=> {
                     Device.BeginInvokeOnMainThread(async () => {
-                        if (ResourceController.IsOffline)
-                        {
-                            return;
-                        }
                         if (value)
                         {
                             if (!WebResourceController.downloadedData.exerciseIDs.Contains(id))
                             {
                                 var loadingBanner = new LoadingBanner();
-                                loadingBanner.Progress = $"Загрузка и сохранение";
+                                if (ResourceController.IsOffline)
+                                {
+                                    loadingBanner.Progress = $"Загрузка и сохранение\nПерезагрузите страницу после завершения";
+                                }
+                                else
+                                {
+                                    loadingBanner.Progress = $"Загрузка и сохранение";
+                                }
                                 await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
                                 WebResourceController.downloadedData.exerciseIDs.Add(id);
                                 await Application.Current.MainPage.Navigation.PopModalAsync();

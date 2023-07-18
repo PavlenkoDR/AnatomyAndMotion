@@ -17,6 +17,15 @@ namespace MuscleAnatomyAndMotion
             FlyoutPage.ListView.ItemSelected += ListView_ItemSelected;
             var menuItems = ((Flyout as MainFlyoutPageFlyout).BindingContext as MainFlyoutPageFlyout.MainFlyoutPageFlyoutViewModel).MenuItems;
             OpenPage(menuItems?.Count > 0 ? menuItems[0] : null);
+
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                if (await UpdateController.Validate())
+                {
+                    var description = await UpdateController.getUpdateDescription();
+                    await DisplayAlert("Обновление", description, "ОК");
+                }
+            });
         }
         
         SortedDictionary<string, List<int>> rotateTimingFrames = new SortedDictionary<string, List<int>>()
@@ -35,7 +44,7 @@ namespace MuscleAnatomyAndMotion
             if (item?.GetType() == typeof(MainFlyoutPageFlyoutMenuItemAnatomy))
             {
                 var itemm = item as MainFlyoutPageFlyoutMenuItemAnatomy;
-                page = new AnatomyPage(itemm.xOffset, itemm.ContentScale, itemm.bodyPartID, rotateTimingFrames[MuscleDictionary.muscleAssets[itemm.bodyPartID].body_part]);
+                page = new AnatomyPage(itemm.xOffset, itemm.ContentScale, itemm.bodyPartID, rotateTimingFrames[MuscleDictionary.GetCurrent().muscleAssets[itemm.bodyPartID].body_part]);
                 page.Title = itemm.Title;
             }
             else if (item?.GetType() == typeof(MainFlyoutPageFlyoutMenuItem))

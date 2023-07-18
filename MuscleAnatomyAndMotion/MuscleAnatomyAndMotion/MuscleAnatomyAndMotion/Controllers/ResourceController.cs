@@ -12,6 +12,10 @@ namespace MuscleAnatomyAndMotion.Controllers
         public static bool IsOffline { get; set; } = true;
         public static async Task<string> ReadString(string lang, string path)
         {
+            if (WebResourceController.IsFileDownloaded(lang, path))
+            {
+                return WebResourceController.ReadString(lang, path);
+            }
             if (!IsOffline)
             {
                 return InternalResourceController.ReadString(lang, path) ?? WebResourceController.ReadString(lang, path);
@@ -23,6 +27,10 @@ namespace MuscleAnatomyAndMotion.Controllers
         }
         public static async Task<Stream> GetInputStream(string lang, string path)
         {
+            if (WebResourceController.IsFileDownloaded(lang, path))
+            {
+                return WebResourceController.GetInputStream(lang, path);
+            }
             if (!IsOffline)
             {
                 return InternalResourceController.GetInputStream(lang, path) ?? WebResourceController.GetInputStream(lang, path);
@@ -34,6 +42,10 @@ namespace MuscleAnatomyAndMotion.Controllers
         }
         public static async Task<ImageSource> GetImageSource(string lang, string path)
         {
+            if (WebResourceController.IsFileDownloaded(lang, path))
+            {
+                return WebResourceController.GetImageSource(lang, path);
+            }
             if (!IsOffline)
             {
                 return InternalResourceController.GetImageSource(lang, path) ?? WebResourceController.GetImageSource(lang, path);

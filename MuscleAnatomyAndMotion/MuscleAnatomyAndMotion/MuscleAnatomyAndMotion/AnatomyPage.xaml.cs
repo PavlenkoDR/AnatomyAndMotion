@@ -39,22 +39,38 @@ namespace MuscleAnatomyAndMotion
             get => WebResourceController.downloadedData.bodyPartIDs.Contains(muscleAsset.id);
             set
             {
-                if (ResourceController.IsOffline)
-                {
-                    return;
-                }
-                if (value)
-                {
-                    if (!WebResourceController.downloadedData.bodyPartIDs.Contains(muscleAsset.id))
-                    {
-                        WebResourceController.downloadedData.bodyPartIDs.Add(muscleAsset.id);
-                    }
-                }
-                else
-                {
-                    WebResourceController.downloadedData.bodyPartIDs.Remove(muscleAsset.id);
-                }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isDownloaded"));
+                Task.Run(() => {
+                    Device.BeginInvokeOnMainThread(async () => {
+                        if (value)
+                        {
+                            if (!WebResourceController.downloadedData.bodyPartIDs.Contains(muscleAsset.id))
+                            {
+                                var loadingBanner = new LoadingBanner();
+                                if (ResourceController.IsOffline)
+                                {
+                                    loadingBanner.Progress = $"Загрузка и сохранение\nПерезагрузите страницу после завершения";
+                                }
+                                else
+                                {
+                                    loadingBanner.Progress = $"Загрузка и сохранение";
+                                }
+                                await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
+                                WebResourceController.downloadedData.bodyPartIDs.Add(muscleAsset.id);
+                                await Application.Current.MainPage.Navigation.PopModalAsync();
+                            }
+                        }
+                        else
+                        {
+                            var loadingBanner = new LoadingBanner();
+                            loadingBanner.Progress = $"Удаление из сохраненных";
+                            await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
+                            WebResourceController.downloadedData.bodyPartIDs.Remove(muscleAsset.id);
+                            await Application.Current.MainPage.Navigation.PopModalAsync();
+                        }
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isDownloaded"));
+                    });
+                    Task.Yield();
+                });
             }
         }
         private MuscleAsset muscleAsset;
@@ -80,7 +96,7 @@ namespace MuscleAnatomyAndMotion
         public AnatomyPage(float xOffset, float contentScale, BodyPartID id, List<int> rotateTimingFrames)
         {
             this.xOffset = xOffset;
-            this.muscleAsset = MuscleDictionary.muscleAssets[id];
+            this.muscleAsset = MuscleDictionary.GetCurrent().muscleAssets[id];
             ContentScale = contentScale;
             for (int i = 0; i < rotateTimingFrames.Count; ++i)
             {

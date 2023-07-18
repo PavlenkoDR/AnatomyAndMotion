@@ -21,7 +21,7 @@ namespace MuscleAnatomyAndMotion
         public ObservableCollection<MuscleViewModel> MuscleList { get; set; }
         public MuscleInfoListPage()
         {
-            MuscleList = new ObservableCollection<MuscleViewModel>(MuscleDictionary.musclesExtended.Values.Select(x => Utils.As<MuscleExtended, MuscleViewModel>(x)));
+            MuscleList = new ObservableCollection<MuscleViewModel>(MuscleDictionary.GetCurrent().musclesExtended.Values.Select(x => Utils.As<MuscleExtended, MuscleViewModel>(x)));
             InitializeComponent();
             BindingContext = this;
             mainStack.ItemsSource = MuscleList;

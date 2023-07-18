@@ -4,17 +4,22 @@
              x:Class="MuscleAnatomyAndMotion.MainFlyoutPageFlyout"
              Title="Flyout"
              BackgroundColor="DarkGray">
-    <StackLayout>
+    <StackLayout BackgroundColor="Orange">
         <ListView x:Name="MenuItemsListView" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" Margin="15, 50, 0, 0">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Padding="10" HorizontalOptions="FillAndExpand">
-                            <Label VerticalOptions="FillAndExpand" VerticalTextAlignment="Center" Text="{Binding Title}" FontSize="24"/>
+                            <Label VerticalOptions="FillAndExpand" VerticalTextAlignment="Center" Text="{Binding Title}" FontSize="24" TextColor="Black"/>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Label x:Name="UpdateLabel" Text="Скачать обновление" IsVisible="False" FontSize="24" Margin="30, 0, 30, 50" BackgroundColor="DarkOrange" TextDecorations="Underline" HorizontalOptions="FillAndExpand" Padding="5" TextColor="Black" HorizontalTextAlignment="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+            </Label.GestureRecognizers>
+        </Label>
     </StackLayout>
 </ContentPage>

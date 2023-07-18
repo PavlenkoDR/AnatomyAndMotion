@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -24,15 +24,22 @@ namespace MuscleAnatomyAndMotion
 
             BindingContext = new MainFlyoutPageFlyoutViewModel();
             ListView = MenuItemsListView;
+            tryShowUpdate();
+        }
+
+        async void tryShowUpdate()
+        {
+            UpdateLabel.IsVisible = await UpdateController.Validate();
         }
 
         public class MainFlyoutPageFlyoutViewModel : INotifyPropertyChanged
         {
             public ObservableCollection<IMainFlyoutPageFlyoutMenuItem> MenuItems { get; set; }
-            
+
+
             public MainFlyoutPageFlyoutViewModel()
             {
-                var muscleAssetValuess = MuscleDictionary.muscleAssets.ToList();
+                var muscleAssetValuess = MuscleDictionary.GetCurrent().muscleAssets.ToList();
                 if (muscleAssetValuess.Count == 0)
                 {
                     return;
@@ -62,6 +69,11 @@ namespace MuscleAnatomyAndMotion
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
             #endregion
+        }
+
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+            Browser.OpenAsync(UpdateController.getUpdateUrl().Result);
         }
     }
 }

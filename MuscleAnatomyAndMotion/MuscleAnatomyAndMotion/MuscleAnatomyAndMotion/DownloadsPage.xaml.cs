@@ -54,7 +54,7 @@ namespace MuscleAnatomyAndMotion
         {
             List<Utils.Grouping<string, Variant>> favorites = new List<Utils.Grouping<string, Variant>>();
             {
-                var models = WebResourceController.downloadedData.exerciseIDs.Select(y => Utils.As<Exercise, ExerciseViewModel>(MuscleDictionary.exercises[y]).SetID(y)).ToList();
+                var models = WebResourceController.downloadedData.exerciseIDs.Select(y => Utils.As<Exercise, ExerciseViewModel>(MuscleDictionary.GetCurrent().exercises[y]).SetID(y)).ToList();
                 models.ForEach(x => x.isDownloaded = true);
                 if (models.Count() > 0)
                 {
@@ -62,7 +62,7 @@ namespace MuscleAnatomyAndMotion
                 }
             }
             {
-                var models = WebResourceController.downloadedData.muscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.musclesExtended[y])).ToList();
+                var models = WebResourceController.downloadedData.muscleIDs.Select(y => Utils.As<MuscleExtended, MuscleViewModel>(MuscleDictionary.GetCurrent().musclesExtended[y])).ToList();
                 models.ForEach(x => x.isDownloaded = true);
                 if (models.Count() > 0)
                 {

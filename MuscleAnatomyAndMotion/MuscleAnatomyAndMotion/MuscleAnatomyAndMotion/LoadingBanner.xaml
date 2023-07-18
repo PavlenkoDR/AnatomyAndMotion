@@ -6,7 +6,7 @@
         <StackLayout>
             <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
                 <ActivityIndicator Grid.Row="0" IsVisible="true" IsRunning="true" Scale="1" HorizontalOptions="Center"/>
-                <Label Text="{Binding Progress}" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
+                <Label Text="{Binding Progress}" TextColor="Orange" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

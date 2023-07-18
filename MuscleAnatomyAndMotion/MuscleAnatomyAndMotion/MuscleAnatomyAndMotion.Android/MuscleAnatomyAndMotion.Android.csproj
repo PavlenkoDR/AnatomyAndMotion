@@ -56,7 +56,7 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <AndroidDexTool>d8</AndroidDexTool>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidPackageFormat>aab</AndroidPackageFormat>
     <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
     <AndroidKeyStore>false</AndroidKeyStore>
     <AndroidSigningKeyStore>
@@ -81,8 +81,20 @@
     <PackageReference Include="Xamarin.AndroidX.Core">
       <Version>1.10.1.1</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Analytics">
+      <Version>121.3.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Config">
+      <Version>121.4.0.2</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Firebase.Crashlytics">
       <Version>118.3.7.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Iid">
+      <Version>121.1.0.10</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Messaging">
+      <Version>123.1.2.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2578" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.7" />
@@ -143,6 +155,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\xml\remote_config_defaults.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

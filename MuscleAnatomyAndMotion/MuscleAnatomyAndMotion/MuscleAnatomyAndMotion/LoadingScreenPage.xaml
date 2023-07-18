@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MuscleAnatomyAndMotion.LoadingScreenPage" BackgroundColor="Black">
     <ContentPage.Content>
-        <StackLayout VerticalOptions="CenterAndExpand">
-            <Label x:Name="loadingLabel" Text="Загрузка" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
-            <Label x:Name="loadingProgress" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
-        </StackLayout>
+        <ScrollView>
+            <StackLayout VerticalOptions="CenterAndExpand">
+                <Label x:Name="loadingLabel" Text="Загрузка" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
+                <Label x:Name="loadingProgress" TextColor="Orange" HorizontalOptions="CenterAndExpand"/>
+            </StackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

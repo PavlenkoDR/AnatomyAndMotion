@@ -137,22 +137,38 @@ namespace MuscleAnatomyAndMotion.Views
             get => WebResourceController.downloadedData.muscleIDs.Contains(id);
             set
             {
-                if (ResourceController.IsOffline)
-                {
-                    return;
-                }
-                if (value)
-                {
-                    if (!WebResourceController.downloadedData.muscleIDs.Contains(id))
-                    {
-                        WebResourceController.downloadedData.muscleIDs.Add(id);
-                    }
-                }
-                else
-                {
-                    WebResourceController.downloadedData.muscleIDs.Remove(id);
-                }
-                RaisePropertyChanged("isDownloaded");
+                Task.Run(() => {
+                    Device.BeginInvokeOnMainThread(async () => {
+                        if (value)
+                        {
+                            if (!WebResourceController.downloadedData.muscleIDs.Contains(id))
+                            {
+                                var loadingBanner = new LoadingBanner();
+                                if (ResourceController.IsOffline)
+                                {
+                                    loadingBanner.Progress = $"Загрузка и сохранение\nПерезагрузите страницу после завершения";
+                                }
+                                else
+                                {
+                                    loadingBanner.Progress = $"Загрузка и сохранение";
+                                }
+                                await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
+                                WebResourceController.downloadedData.muscleIDs.Add(id);
+                                await Application.Current.MainPage.Navigation.PopModalAsync();
+                            }
+                        }
+                        else
+                        {
+                            var loadingBanner = new LoadingBanner();
+                            loadingBanner.Progress = $"Удаление из сохраненных";
+                            await Application.Current.MainPage.Navigation.PushModalAsync(loadingBanner);
+                            WebResourceController.downloadedData.muscleIDs.Remove(id);
+                            await Application.Current.MainPage.Navigation.PopModalAsync();
+                        }
+                        RaisePropertyChanged("isDownloaded");
+                    });
+                    Task.Yield();
+                });
             }
         }
         private bool _isUseSubDescription = false;

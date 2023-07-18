@@ -71,7 +71,7 @@ namespace MuscleAnatomyAndMotion
                     continue;
                 }
                 {
-                    var bodyPart = MuscleDictionary.muscleAssets[id];
+                    var bodyPart = MuscleDictionary.GetCurrent(false).muscleAssets[id];
                     saveChanger(bodyPart.video_url);
                     foreach (var layer in bodyPart.layers)
                     {
@@ -108,7 +108,7 @@ namespace MuscleAnatomyAndMotion
                     continue;
                 }
                 {
-                    var muscle = MuscleDictionary.musclesExtended[id];
+                    var muscle = MuscleDictionary.GetCurrent(false).musclesExtended[id];
                     saveChanger(muscle.thumbnail_image_url);
                     saveChanger(muscle.strength_video_url);
                     saveChanger(muscle.stretch_video_url);
@@ -154,11 +154,11 @@ namespace MuscleAnatomyAndMotion
                     continue;
                 }
                 {
-                    var exercise = MuscleDictionary.exercises[id];
+                    var exercise = MuscleDictionary.GetCurrent(false).exercises[id];
                     saveChanger(exercise.thumbnail_image_url);
                 }
                 {
-                    var exercise = MuscleDictionary.exercisesExtended[id];
+                    var exercise = MuscleDictionary.GetCurrent(false).exercisesExtended[id];
                     saveChanger(exercise.thumbnail_image_url);
                     saveChanger(exercise.analyse_table_image_url);
                     foreach (var videos in new[] { exercise.correct_videos, exercise.mistake_videos })
