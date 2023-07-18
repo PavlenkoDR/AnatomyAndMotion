@@ -67,11 +67,11 @@ namespace MuscleAnatomyAndMotion
                     else if (File.Exists(path))
                     {
                         File.Delete(path);
-                        new FileInfo(path).Directory.Create();
-                        using (var fileStream = File.OpenWrite(path))
-                        {
-                            await stream.CopyToAsync(fileStream);
-                        }
+                    }
+                    new FileInfo(path).Directory.Create();
+                    using (var fileStream = File.OpenWrite(path))
+                    {
+                        await stream.CopyToAsync(fileStream);
                     }
                     videoView.IsVisible = true;
                     videoView.SetVideoPath(path);

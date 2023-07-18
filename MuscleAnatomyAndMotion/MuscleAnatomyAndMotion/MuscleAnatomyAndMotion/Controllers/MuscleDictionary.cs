@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace MuscleAnatomyAndMotion.Controllers
@@ -76,6 +77,7 @@ namespace MuscleAnatomyAndMotion.Controllers
         private Task ReadMuscleFullInfos()
         {
             return Task.Run(async () =>
+            await Device.InvokeOnMainThreadAsync(async () =>
             {
                 try
                 {
@@ -237,7 +239,7 @@ namespace MuscleAnatomyAndMotion.Controllers
                     return;
                 }
                 Success = true;
-            });
+            }));
         }
     }
 }

@@ -20,13 +20,16 @@ namespace MuscleAnatomyAndMotion
         public LoadingScreenPage()
         {
             InitializeComponent();
-            RunLoad();
             LocalFilesController.Init();
+            RunLoad();
         }
 
         private void RunLoad()
         {
             Task.Run(async () => {
+                await Device.InvokeOnMainThreadAsync(async () => {
+                    await DependencyService.Get<IExternalResourceReader>().GetInitTask();
+                });
                 var loadTask = MuscleDictionary.Init();
                 while (!loadTask.IsCompleted)
                 {
